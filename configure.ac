@@ -44,6 +44,11 @@ if test "x$GROFF" = "xfound" ; then
    AC_DEFINE([HAS_GROFF], 1, [Define to 1 if you have the groff package.])
 fi
 
+AC_CHECK_PROG([MANDB], [mandb], [yes], [no])
+if test x"$MANDB" = xyes; then
+	AC_DEFINE([HAVE_MANDB], 1, [Define if the man implementation is man-db])
+fi
+
 AC_CHECK_FUNCS([mkstemp])
 
 AC_ARG_WITH(helpdir,
