@@ -289,4 +289,3 @@ void MakeSearchWidget(ManpageGlobals * man_globals, Widget parent);
 int Width(Widget);
 int Height(Widget);
 int BorderWidth(Widget);
-char *Name(Widget);
