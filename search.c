@@ -182,7 +182,7 @@ DoSearch(ManpageGlobals * man_globals, int type)
         strcpy(tmp, MANTEMP);   /* get a temp file. */
         fd = mkstemp(tmp);
         if (fd < 0) {
-            PopupWarning(man_globals, "Cant create temp file");
+            PopupWarning(man_globals, "Can't create temp file");
             return NULL;
         }
         mantmp = tmp;

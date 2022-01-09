@@ -63,7 +63,7 @@ static SectionNameRec SectionNames[] = {
     {"(CP) Programming Commands", "CP"},
     {"(DOS) DOS Subroutines and Libraries", "DOS"},
     {"(F) File Formats", "F"},
-    {"(HW) Hardware Dependant", "HW"},
+    {"(HW) Hardware Dependent", "HW"},
     {"(K) Kernel Subroutines", "K"},
     {"(LOCAL) Local utilities for your system", "LOCAL"},
     {"(M) Miscellaneous", "M"},

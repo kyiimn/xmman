@@ -80,7 +80,7 @@ if test x$LOCALMANPATH != x; then
 	[Default local man page search path (default: none)])
 fi
 
-# Obtain compiler/linker options from depedencies
+# Obtain compiler/linker options from dependencies
 PKG_CHECK_MODULES(XMAN, [xproto >= 7.0.17 xaw7 xt])
 
 AC_ARG_WITH(manconfig,
