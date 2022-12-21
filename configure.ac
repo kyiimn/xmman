@@ -49,6 +49,10 @@ if test x"$MANDB" = xyes; then
 	AC_DEFINE([HAVE_MANDB], 1, [Define if the man implementation is man-db])
 fi
 
+# Checks for typedefs, structures, and compiler characteristics.
+AC_SYS_LARGEFILE
+
+# Checks for library functions.
 AC_CHECK_FUNCS([mkstemp])
 
 AC_ARG_WITH(helpdir,

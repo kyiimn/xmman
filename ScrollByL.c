@@ -32,6 +32,7 @@ from the X Consortium.
 #include <ctype.h>
 #include <X11/Xos.h>
 #include <stdlib.h>
+#include <limits.h>
 
 #include <X11/IntrinsicP.h>
 #include <sys/stat.h>           /* depends on IntrinsicP.h */
@@ -799,6 +800,13 @@ LoadFile(Widget w)
     if (fstat(fileno(file), &fileinfo))
         XtAppError(XtWidgetToApplicationContext(w),
                    "SBLW LoadFile: Failure in fstat.");
+
+/*
+ * The XtMalloc below is limited to a size of int by the libXt API.
+ */
+    if (fileinfo.st_size >= INT_MAX)
+        XtAppError(XtWidgetToApplicationContext(w),
+                   "SBLW LoadFile: File too large.");
 
 /*
  * Allocate a space for a list of pointer to the beginning of each line.
