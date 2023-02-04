@@ -40,6 +40,10 @@ Starts without the Top Menu with the three buttons in it.
 Sets the size and location of the Top Menu with the three buttons in it.
 .IP "\fB\-pagesize\fP \fIWxH+X+Y\fP"
 Sets the size and location of all the Manual Pages.
+.IP "\fB\-help\fP"
+Print a usage message and exit.
+.IP "\fB\-version\fP"
+Print the program version and exit.
 .SH "CUSTOMIZING XMAN"
 .PP
 .I Xman
