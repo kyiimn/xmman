@@ -487,9 +487,32 @@ PopupSearch(Widget w, XEvent * event, String * params, Cardinal * num_params)
             XtRealizeWidget(man_globals->search_widget);
             AddCursor(man_globals->search_widget,
                       resources.cursors.search_entry);
+/*
+ * Set up ICCCM delete window.
+ */
+            XtOverrideTranslations(man_globals->search_widget,
+              XtParseTranslationTable("<Message>WM_PROTOCOLS: RemoveSearch()"));
+            XSetWMProtocols(XtDisplay(man_globals->search_widget),
+                            XtWindow(man_globals->search_widget),
+                            &wm_delete_window, 1);
         }
         Popup(man_globals->search_widget, XtGrabNone);
     }
+}
+
+/*      Function Name: RemoveSearch
+ *      Description: Removes this search widget.
+ *      Arguments: w - search widget
+ *                 event - NOT USED.
+ *                 params, num_params - NOT USED.
+ *      Returns: none.
+ */
+
+/*ARGSUSED*/
+void
+RemoveSearch(Widget w, XEvent * event, String * params, Cardinal * num_params)
+{
+    XtPopdown(w);
 }
 
 /*      Function Name: CreateNewManpage

@@ -117,6 +117,7 @@ static XtActionsRec xman_actions[] = {
     {"Search", Search},
     {"PopupHelp", PopupHelp},
     {"PopupSearch", PopupSearch},
+    {"RemoveSearch", RemoveSearch},
     {"CreateNewManpage", CreateNewManpage},
     {"RemoveThisManpage", RemoveThisManpage},
     {"SaveFormattedPage", SaveFormattedPage},

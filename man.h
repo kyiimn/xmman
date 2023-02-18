@@ -235,6 +235,8 @@ void PopupHelp(Widget w, XEvent * event, String * params,
                Cardinal * num_params);
 void PopupSearch(Widget w, XEvent * event, String * params,
                  Cardinal * num_params);
+void RemoveSearch(Widget w, XEvent * event, String * params,
+                 Cardinal * num_params);
 void Quit(Widget w, XEvent * event, String * params, Cardinal * num_params);
 void RemoveThisManpage(Widget w, XEvent * event, String * params,
                        Cardinal * num_params);
