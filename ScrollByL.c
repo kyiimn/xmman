@@ -701,8 +701,11 @@ Destroy(Widget w)
 
     if (sblw->scroll.bar != NULL)
         XtDestroyWidget(sblw->scroll.bar);      /* Destroy scrollbar. */
-    if (sblw->scroll.file != NULL)
+    if (sblw->scroll.file != NULL) {
         fclose(sblw->scroll.file);
+        sblw->scroll.file = NULL;
+    }
+    LoadFile(w);
     DestroyGCs(w);
 }
 
