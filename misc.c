@@ -662,7 +662,8 @@ ConstructCommand(char *cmdbuf, const char *path,
                  const char *filename, const char *tempfile)
 {
 #ifdef HAVE_MANDB
-    int used = snprintf(cmdbuf, BUFSIZ, "man -l %s > %s 2>/dev/null",
+    int used = snprintf(cmdbuf, BUFSIZ, "MAN_KEEP_FORMATTING=x GROFF_NO_SGR= "
+                        "man -l %s > %s 2>/dev/null",
                         filename, tempfile);
     if (used >= BUFSIZ - 1)
 	return FALSE;
