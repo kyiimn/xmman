@@ -174,10 +174,6 @@ static SectionNameRec SectionNames[] = {
     {"(l) Local",                               "l"},
     {"(n) New",                                 "n"},
     {"(o) Old",                                 "o"},
-#ifdef sony
-    {"(p) Public Domain",                       "p"},
-    {"(s) Sony Specific",                       "s"},
-#endif
 };
 
 #endif
