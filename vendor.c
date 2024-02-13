@@ -38,25 +38,6 @@ typedef struct sectionName {
     const char *suffix;
 } SectionNameRec;
 
-#if defined(SVR4) && !defined(sun)
-
-static SectionNameRec SectionNames[] = {
-    {"(1) User Commands",               "1"},
-    {"(1m) Sys, Administration",        "1m"},
-    {"(2) System Calls",                "2"},
-    {"(3) Subroutines",                 "3"},
-    {"(4) File Formats",                "4"},
-    {"(5) Miscellaneous",               "5"},
-    {"(6) Games",                       "6"},
-    {"(7) Devices",                     "7"},
-    {"(8) Sys. Administration",         "8"},
-    {"(l) Local",                       "l"},
-    {"(n) New",                         "n"},
-    {"(o) Old",                         "o"}
-};
-
-#else
-
 #if defined(sun) && defined(SVR4)
 /* losing man.cf is useless because it has no section names */
 
@@ -177,7 +158,7 @@ static SectionNameRec SectionNames[] = {
 };
 
 #endif
-#endif
+
 
 /*	Function Name: AddStandardSections
  *	Description: Adds all the standard sections to the list for this path.

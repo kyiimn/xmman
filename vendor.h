@@ -52,7 +52,7 @@ from the X Consortium.
 
 #define SEARCHDIR  MAN
 
-#if (defined(SVR4) && !defined(sun)) || (defined(BSD) && (BSD >= 199103)) || defined(linux) || defined(__CYGWIN__)
+#if (defined(BSD) && (BSD >= 199103)) || defined(linux) || defined(__CYGWIN__)
 # define SEARCHOTHER CAT
 #endif
 
@@ -70,7 +70,7 @@ from the X Consortium.
 #  define SYSMANPATH "/usr/share/man:/usr/local/man:/usr/X11R6/man"
 #elif defined(SVR4) && defined(sun)
 #  define SYSMANPATH "/usr/share/man:/usr/X11/man:/usr/openwin/share/man:/usr/dt/share/man:/usr/sfw/share/man"
-#elif defined(SVR4) || (defined(BSD) && (BSD >= 199103))
+#elif (defined(BSD) && (BSD >= 199103))
 #  define SYSMANPATH "/usr/share/man"
 #endif
 
