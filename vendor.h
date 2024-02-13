@@ -84,29 +84,18 @@ from the X Consortium.
  * Compression Definitions.
  */
 
-#if defined(__SCO__) || defined(__UNIXWARE__)
-#  define COMPRESSION_EXTENSION   "Z"           /* dummy */
-#  define COMPRESSION_EXTENSIONS  "zZF"       /* pack, compress, freeze */
-#  define UNCOMPRESS_FORMAT       uncompress_format
-#  define UNCOMPRESS_FORMAT_1     "pcat %s > %s"
-#  define UNCOMPRESS_FORMAT_2     "zcat < %s > %s"
-#  define UNCOMPRESS_FORMAT_3     "fcat < %s > %s"
-#  define NO_COMPRESS
-#else
-#  define COMPRESSION_EXTENSION "Z"
-#  define UNCOMPRESS_FORMAT     "zcat < %s >> %s"
-#  define COMPRESS              "compress"
-#  define GZIP_EXTENSION "gz"
-#  define GUNZIP_FORMAT "gzip -c -d < %s >> %s"
-#  define GZIP_COMPRESS "gzip"
-#  define BZIP2_EXTENSION "bz2"
-#  define BUNZIP2_FORMAT "bunzip2 -c -d < %s >> %s"
-#  define BZIP2_COMPRESS "bzip2"
-#  define LZMA_EXTENSION "lzma"
-#  define UNLZMA_FORMAT "unlzma -c -d < %s >> %s"
-#  define LZMA_COMPRESS "lzma"
-#endif
-
+#define COMPRESSION_EXTENSION "Z"
+#define UNCOMPRESS_FORMAT     "zcat < %s >> %s"
+#define COMPRESS              "compress"
+#define GZIP_EXTENSION "gz"
+#define GUNZIP_FORMAT "gzip -c -d < %s >> %s"
+#define GZIP_COMPRESS "gzip"
+#define BZIP2_EXTENSION "bz2"
+#define BUNZIP2_FORMAT "bunzip2 -c -d < %s >> %s"
+#define BZIP2_COMPRESS "bzip2"
+#define LZMA_EXTENSION "lzma"
+#define UNLZMA_FORMAT "unlzma -c -d < %s >> %s"
+#define LZMA_COMPRESS "lzma"
 
 
 /*
@@ -160,11 +149,7 @@ from the X Consortium.
 #define MAN "man"
 #endif
 
-#if defined(SCO)
-#  define CAT "cat."
-#else
-#  define CAT "cat"
-#endif
+#define CAT "cat"
 
 /* Solaris has nroff man pages in "man" and sgml man pages in "sman" */
 #if defined(sun) && defined(SVR4)
