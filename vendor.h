@@ -51,10 +51,7 @@ from the X Consortium.
  */
 
 #define SEARCHDIR  MAN
-
-#if (defined(BSD) && (BSD >= 199103)) || defined(linux) || defined(__CYGWIN__)
-# define SEARCHOTHER CAT
-#endif
+#define SEARCHOTHER CAT
 
 /*
  * The default manual page directory.
@@ -68,12 +65,10 @@ from the X Consortium.
 #  define SYSMANPATH "/usr/share/man:/usr/local/man:/usr/X11R6/man"
 #elif defined(SVR4) && defined(sun)
 #  define SYSMANPATH "/usr/share/man:/usr/X11/man:/usr/openwin/share/man:/usr/dt/share/man:/usr/sfw/share/man"
-#elif (defined(BSD) && (BSD >= 199103))
-#  define SYSMANPATH "/usr/share/man"
 #endif
 
 #ifndef SYSMANPATH
-#  define SYSMANPATH "/usr/man"
+#  define SYSMANPATH "/usr/share/man"
 #endif
 
 #endif
@@ -105,8 +100,6 @@ from the X Consortium.
 #ifndef HANDLE_ROFFSEQ
 # if defined(CSRG_BASED)
 #  define FORMAT "| eqn | tbl | nroff -mandoc"
-# elif defined(BSD) && (BSD >= 199103)
-#  define FORMAT "| eqn | tbl | nroff -man"
 # elif defined(linux) || defined(__CYGWIN__)
 #  define FORMAT "| pic | eqn | tbl -Tlatin1 | GROFF_NO_SGR= groff -Tlatin1 -mandoc"
 # else
