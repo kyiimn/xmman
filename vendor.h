@@ -113,15 +113,7 @@ from the X Consortium.
  * The command filters for the manual and apropos searches.
  */
 
-#if defined(hpux)
-#  define NO_MANPATH_SUPPORT
-#endif
-
-#ifdef NO_MANPATH_SUPPORT
-#  define APROPOS_FORMAT ("man -k %s | pr -h Apropos >> %s")
-#else
-#  define APROPOS_FORMAT ("man -M %s -k %s | pr -h Apropos >> %s")
-#endif
+#define APROPOS_FORMAT ("man -M %s -k %s | pr -h Apropos >> %s")
 
 #ifndef HANDLE_ROFFSEQ
 # if defined(CSRG_BASED)
