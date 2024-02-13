@@ -64,9 +64,7 @@ from the X Consortium.
 
 #ifndef SYSMANPATH
 
-#if defined(__bsdi__)
-#  define SYSMANPATH "/usr/share/man:/usr/contrib/man:/usr/contrib/isode/man:/usr/local/man"
-#elif defined(__OpenBSD__) || defined(__DARWIN__)
+#if defined(__OpenBSD__) || defined(__DARWIN__)
 #  define SYSMANPATH "/usr/share/man:/usr/local/man:/usr/X11R6/man"
 #elif defined(SVR4) && defined(sun)
 #  define SYSMANPATH "/usr/share/man:/usr/X11/man:/usr/openwin/share/man:/usr/dt/share/man:/usr/sfw/share/man"
@@ -143,12 +141,7 @@ from the X Consortium.
  * Names of the man and cat dirs.
  */
 
-#ifdef __bsdi__
-#define MAN "cat"
-#else
 #define MAN "man"
-#endif
-
 #define CAT "cat"
 
 /* Solaris has nroff man pages in "man" and sgml man pages in "sman" */
