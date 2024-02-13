@@ -52,7 +52,7 @@ from the X Consortium.
 
 #define SEARCHDIR  MAN
 
-#if (defined(sgi) || (defined(SVR4) && !defined(sun)) || (defined(BSD) && (BSD >= 199103)) || defined(linux) || defined(__CYGWIN__) )
+#if (defined(SVR4) && !defined(sun)) || (defined(BSD) && (BSD >= 199103)) || defined(linux) || defined(__CYGWIN__)
 # define SEARCHOTHER CAT
 #endif
 
@@ -72,8 +72,6 @@ from the X Consortium.
 #  define SYSMANPATH "/usr/share/man:/usr/X11/man:/usr/openwin/share/man:/usr/dt/share/man:/usr/sfw/share/man"
 #elif defined(SVR4) || defined(__osf__) || (defined(BSD) && (BSD >= 199103))
 #  define SYSMANPATH "/usr/share/man"
-#elif defined(sgi)
-#  define SYSMANPATH "/usr/catman/a_man:/usr/catman/g_man:/usr/catman/p_man:/usr/catman/u_man:/usr/man/p_man:/usr/man/u_man:/usr/man"
 #endif
 
 #ifndef SYSMANPATH
@@ -86,12 +84,7 @@ from the X Consortium.
  * Compression Definitions.
  */
 
-#if defined(sgi)
-#  define COMPRESSION_EXTENSION   "z"
-#  define UNCOMPRESS_FORMAT       "pcat %s > %s"
-#  define NO_COMPRESS           /* mac can't handle using pack as a filter and
-                                   xman needs it to be done that way. */
-#elif defined(__SCO__) || defined(__UNIXWARE__)
+#if defined(__SCO__) || defined(__UNIXWARE__)
 #  define COMPRESSION_EXTENSION   "Z"           /* dummy */
 #  define COMPRESSION_EXTENSIONS  "zZF"       /* pack, compress, freeze */
 #  define UNCOMPRESS_FORMAT       uncompress_format
