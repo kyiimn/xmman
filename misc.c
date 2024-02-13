@@ -60,7 +60,7 @@ static Boolean ConstructCommand(char *cmdbuf, const char *path,
                                 const char *filename, const char *tempfile);
 #endif
 
-#if defined(ISC) || defined(__SCO__) || defined(__UNIXWARE__)
+#if defined(__SCO__) || defined(__UNIXWARE__)
 static char *uncompress_format = NULL;
 
 static char *uncompress_formats[] = {
@@ -196,7 +196,7 @@ FindManualFile(ManpageGlobals * man_globals, int section_num, int entry_num)
     const char *entry = manual[section_num].entries[entry_num];
     int len_cat = strlen(CAT);
 
-#if defined(ISC) || defined(__SCO__) || defined(__UNIXWARE__)
+#if defined(__SCO__) || defined(__UNIXWARE__)
     int i;
 #endif
 
@@ -227,7 +227,7 @@ FindManualFile(ManpageGlobals * man_globals, int section_num, int entry_num)
  * Then for compressed files in an uncompressed directory.
  */
 
-#if !defined(ISC) && !defined(__UNIXWARE__)
+#if !defined(__UNIXWARE__)
 #if defined(__OpenBSD__) || defined(__NetBSD__)
     /* look in machine subdir first */
     snprintf(filename, sizeof(filename), "%s/%s%s/%s/%s.%s", path, CAT,

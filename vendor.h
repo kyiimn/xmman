@@ -91,13 +91,9 @@ from the X Consortium.
 #  define UNCOMPRESS_FORMAT       "pcat %s > %s"
 #  define NO_COMPRESS           /* mac can't handle using pack as a filter and
                                    xman needs it to be done that way. */
-#elif defined (ISC) || defined(__SCO__) || defined(__UNIXWARE__)
+#elif defined(__SCO__) || defined(__UNIXWARE__)
 #  define COMPRESSION_EXTENSION   "Z"           /* dummy */
-#  if !defined(__SCO__) && !defined(__UNIXWARE__)
-#    define COMPRESSION_EXTENSIONS  "zZF"       /* pack, compress, freeze */
-#  else
-#    define COMPRESSION_EXTENSIONS  "zZ"        /* pack, compress */
-#  endif
+#  define COMPRESSION_EXTENSIONS  "zZF"       /* pack, compress, freeze */
 #  define UNCOMPRESS_FORMAT       uncompress_format
 #  define UNCOMPRESS_FORMAT_1     "pcat %s > %s"
 #  define UNCOMPRESS_FORMAT_2     "zcat < %s > %s"
