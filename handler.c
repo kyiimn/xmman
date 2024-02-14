@@ -319,21 +319,15 @@ SaveFormattedPage(Widget w, XEvent * event, String * params,
     case 'S':
     case 's':
 
-#ifndef NO_COMPRESS
         if (!man_globals->compress)
-#endif
-
             snprintf(cmdbuf, sizeof(cmdbuf), "%s %s %s", COPY,
                      man_globals->tempfile, man_globals->save_file);
-
-#ifndef NO_COMPRESS
         else if (man_globals->gzip)
             snprintf(cmdbuf, sizeof(cmdbuf), "%s < %s > %s", GZIP_COMPRESS,
                      man_globals->tempfile, man_globals->save_file);
         else
             snprintf(cmdbuf, sizeof(cmdbuf), "%s < %s > %s", COMPRESS,
                      man_globals->tempfile, man_globals->save_file);
-#endif
 
         if (!system(cmdbuf)) {
             /* make sure the formatted man page is fully accessible by the world */
