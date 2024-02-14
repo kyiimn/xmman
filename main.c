@@ -121,9 +121,6 @@ static XtActionsRec xman_actions[] = {
     {"CreateNewManpage", CreateNewManpage},
     {"RemoveThisManpage", RemoveThisManpage},
     {"SaveFormattedPage", SaveFormattedPage},
-#ifdef INCLUDE_XPRINT_SUPPORT
-    {"PrintThisManpage", PrintThisManpage},
-#endif                          /* INCLUDE_XPRINT_SUPPORT */
     {"ShowVersion", ShowVersion},
 };
 
