@@ -59,8 +59,8 @@ static char defaultTranslations[] =
  *
  ****************************************************************/
 
-#define Offset(field) XtOffset(ScrollByLineWidget, scroll.field)
-#define CoreOffset(field) XtOffset(ScrollByLineWidget, core.field)
+#define Offset(field) XtOffsetOf(ScrollByLineRec, scroll.field)
+#define CoreOffset(field) XtOffsetOf(ScrollByLineRec, core.field)
 
 static XtResource resources[] = {
     {XtNwidth, XtCWidth, XtRDimension, sizeof(Dimension),
