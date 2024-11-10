@@ -29,7 +29,7 @@ from the X Consortium.
 */
 
 
-#include "man.h"
+#include "globals.h"
 
 Xman_Resources resources;       /* Resource manager sets these. */
 
