@@ -1,6 +1,6 @@
 
 dnl  Copyright 2005 Red Hat, Inc.
-dnl 
+dnl
 dnl  Permission to use, copy, modify, distribute, and sell this software and its
 dnl  documentation for any purpose is hereby granted without fee, provided that
 dnl  the above copyright notice appear in all copies and that both that
@@ -10,7 +10,7 @@ dnl  advertising or publicity pertaining to distribution of the software without
 dnl  specific, written prior permission.  Red Hat makes no
 dnl  representations about the suitability of this software for any purpose.  It
 dnl  is provided "as is" without express or implied warranty.
-dnl 
+dnl
 dnl  RED HAT DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
 dnl  INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
 dnl  EVENT SHALL RED HAT BE LIABLE FOR ANY SPECIAL, INDIRECT OR
@@ -67,7 +67,7 @@ AC_ARG_WITH(sysmanpath,
                        [Set default system man page search path]),
         [SYSMANPATH="$withval"], [])
 if test x$SYSMANPATH != x; then
-    AC_DEFINE_UNQUOTED(SYSMANPATH, "$SYSMANPATH", 
+    AC_DEFINE_UNQUOTED(SYSMANPATH, "$SYSMANPATH",
 	[Default system man page search path (default: none)])
 fi
 
@@ -76,7 +76,7 @@ AC_ARG_WITH(localmanpath,
                        [Set default local man page search path]),
         [LOCALMANPATH="$withval"], [])
 if test x$LOCALMANPATH != x; then
-    AC_DEFINE_UNQUOTED(LOCALMANPATH, "$LOCALMANPATH", 
+    AC_DEFINE_UNQUOTED(LOCALMANPATH, "$LOCALMANPATH",
 	[Default local man page search path (default: none)])
 fi
 
@@ -89,14 +89,14 @@ AC_ARG_WITH(manconfig,
         [MANCONF="$withval"], [])
 if test x$MANCONF = x; then
 # Check for man page config files
-    AC_CHECK_FILE([/etc/man.conf], [MANCONF="/etc/man.conf"], 
-                  AC_CHECK_FILE([/etc/man.config], [MANCONF="/etc/man.config"], 
+    AC_CHECK_FILE([/etc/man.conf], [MANCONF="/etc/man.conf"],
+                  AC_CHECK_FILE([/etc/man.config], [MANCONF="/etc/man.config"],
                                 AC_CHECK_FILE([/etc/manpath.config], [MANCONF="/etc/manpath.config"],
                                               AC_CHECK_FILE([/usr/share/misc/man.conf], [MANCONF="/usr/share/misc/man.conf"]))))
 fi
 
 if test x$MANCONF != x ; then
-    AC_DEFINE_UNQUOTED(MANCONF, "$MANCONF", 
+    AC_DEFINE_UNQUOTED(MANCONF, "$MANCONF",
 	[Define to path to man config file if you have one])
 
     # Try to determine format of config file
@@ -153,7 +153,7 @@ AC_ARG_WITH(appdefaultdir,
 AC_SUBST(appdefaultdir)
 
 if test "x$RELEASE_VERSION" != "x"; then
-	AC_DEFINE_UNQUOTED([RELEASE_VERSION], "$RELEASE_VERSION", 
+	AC_DEFINE_UNQUOTED([RELEASE_VERSION], "$RELEASE_VERSION",
 		[Release version string if set])
 fi
 

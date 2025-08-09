@@ -48,7 +48,7 @@
 !*SimpleMenu*menuLabel*vertSpace: 100
 !*SimpleMenu*menuLabel*leftMargin: 20
 
-*displayDirectory.Label:	Display Directory 
+*displayDirectory.Label:	Display Directory
 *displayManualPage.Label:	Display Manual Page
 *help.Label:			Help
 *help.geometry:			780x600
@@ -172,16 +172,16 @@
 *manualBrowser*likeToSave*yes.translations:	#override \
 		<Btn1Down>,<Btn1Up>: SaveFormattedPage(Save) reset() \n\
 		<Key>y:   SaveFormattedPage(Save) \n\
-		<Key>n:   SaveFormattedPage(Cancel) 
+		<Key>n:   SaveFormattedPage(Cancel)
 
 *manualBrowser*likeToSave*no.translations:	#override \
 		<Btn1Down>,<Btn1Up>: SaveFormattedPage(Cancel) reset() \n\
 		<Key>y:	  SaveFormattedPage(Save) \n\
-		<Key>n:	  SaveFormattedPage(Cancel) 
+		<Key>n:	  SaveFormattedPage(Cancel)
 
 *manualBrowser*likeToSave*translations:	#override \
 		<Key>y:	  SaveFormattedPage(Save) \n\
-		<Key>n:	  SaveFormattedPage(Cancel) 
+		<Key>n:	  SaveFormattedPage(Cancel)
 
 *helpButton.translations:	#augment \
 		<Btn1Down>,<Btn1Up>: PopupHelp() reset()

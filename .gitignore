@@ -71,9 +71,9 @@ core
 *.tar.bz2
 *.tar.gz
 #
-#		Add & Override patterns for xman 
+#		Add & Override patterns for xman
 #
 #		Edit the following section as needed
 # For example, !report.pc overrides *.pc. See 'man gitignore'
-# 
+#
 xman

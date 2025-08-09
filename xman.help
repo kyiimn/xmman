@@ -95,8 +95,8 @@ Search			Pop up a dialogue box that allows the entire
 			also available through this dialogue box.
 
 Show Both Screens	Split the manual page display window to display
-			both the current manual page and the directory. 
-Show One Screen		Return to a single screen display of either a 
+			both the current manual page and the directory.
+Show One Screen		Return to a single screen display of either a
 			manual page or directory listing.
 
 Remove This Man Page	Remove this manual page, do not quit.
@@ -106,7 +106,7 @@ Open New Man Page	Pop up a new manual page browser window.
 Show Version		Print the current version of xman to the
 			information display window.  Please include the
 			version number when reporting bugs.
- 
+
 Quit			Close all xman windows and quit xman.
 
 
@@ -164,7 +164,7 @@ KEYBOARD ACCELERATORS
 Xman contains a set of preinstalled keyboard accelerators.  These are a
 set of key bindings that perform many of the same operations as the menu
 items.  Since it is not necessary to pull down the menu,  these actions
-can be performed more quickly, hence the name accelerators.  
+can be performed more quickly, hence the name accelerators.
 
 The default key bindings for xman are:
 
@@ -174,7 +174,7 @@ Anywhere:
 	Control - h		Create the help window
 	Control - n		Create a new man page
 	Control - q		Exit xman
-	Control - s             Create a search popup 
+	Control - s             Create a search popup
 
 In a manual page, directory, or help window:
 
