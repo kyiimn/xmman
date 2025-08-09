@@ -95,9 +95,10 @@ PopupWarning(ManpageGlobals * man_globals, const char *string)
         hasPosition = TRUE;
     }
 
-    if (man_globals != NULL)
+    if ((man_globals != NULL) && (man_globals->label != NULL)) {
         ChangeLabel(man_globals->label, buffer);
-    if (man_globals->label == NULL) {
+    }
+    else {
         n = 0;
         if (hasPosition) {
             XtSetArg(wargs[n], XtNx, topX);
