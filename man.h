@@ -282,3 +282,13 @@ void MakeSearchWidget(ManpageGlobals * man_globals, Widget parent);
 int Width(Widget);
 int Height(Widget);
 int BorderWidth(Widget);
+
+/* strlcat.c */
+#ifndef HAVE_STRLCAT
+size_t strlcat(char *dst, const char *src, size_t siz);
+#endif
+
+/* strlcpy.c */
+#ifndef HAVE_STRLCPY
+size_t strlcpy(char *dst, const char *src, size_t siz);
+#endif

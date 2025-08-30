@@ -27,6 +27,10 @@ AC_INIT([xman], [1.2.0],
         [https://gitlab.freedesktop.org/xorg/app/xman/-/issues/], [xman])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
+# Set common system defines for POSIX extensions, such as _GNU_SOURCE
+# Must be called before any macros that run the compiler (like LT_INIT)
+# to avoid autoconf errors.
+AC_USE_SYSTEM_EXTENSIONS
 
 # Initialize Automake
 AM_INIT_AUTOMAKE([foreign dist-xz])
@@ -54,6 +58,7 @@ AC_SYS_LARGEFILE
 
 # Checks for library functions.
 AC_CHECK_FUNCS([mkstemp])
+AC_REPLACE_FUNCS([strlcat strlcpy])
 
 AC_ARG_WITH(helpdir,
         AS_HELP_STRING([--with-helpdir=<path>],
