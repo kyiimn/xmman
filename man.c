@@ -85,8 +85,12 @@ Man(void)
      */
 
     *manpath = '\0';
-    if ((ptr = getenv("MANPATH")) != NULL)
-        strcpy(manpath, ptr);
+    if ((ptr = getenv("MANPATH")) != NULL) {
+        if (strlcpy(manpath, ptr, sizeof(manpath)) >=  sizeof(manpath)) {
+            manpath[0] = '\0';
+            PrintError("$MANPATH too long.");
+        }
+    }
     if (ptr == NULL || streq(ptr, "") || ptr[strlen(ptr) - 1] == ':') {
         lang = getenv("LANG");
 #ifdef MANCONF

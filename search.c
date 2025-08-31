@@ -201,7 +201,10 @@ DoSearch(ManpageGlobals * man_globals, int type)
             }
         }
         else {
-            strcpy(path, manpath);
+            if (strlcpy(path, manpath, sizeof(path)) >= sizeof(path)) {
+                path[0] = '\0';
+                PrintError("$MANPATH too long.");
+            }
         }
 
         snprintf(label, sizeof(label),
