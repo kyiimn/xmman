@@ -179,7 +179,7 @@ DoSearch(ManpageGlobals * man_globals, int type)
     if (type == APROPOS) {
         char label[BUFSIZ];
 
-        strcpy(tmp, MANTEMP);   /* get a temp file. */
+        strlcpy(tmp, MANTEMP, sizeof(tmp));   /* get a temp file. */
         fd = mkstemp(tmp);
         if (fd < 0) {
             PopupWarning(man_globals, "Can't create temp file");
@@ -190,13 +190,13 @@ DoSearch(ManpageGlobals * man_globals, int type)
         manpath = getenv("MANPATH");
         if (manpath == NULL || streq(manpath, "")) {
 #ifdef MANCONF
-            if (!ReadManConfig(path))
+            if (!ReadManConfig(path, sizeof(path)))
 #endif
             {
-                strcpy(path, SYSMANPATH);
+                strlcpy(path, SYSMANPATH, sizeof(path));
 #ifdef LOCALMANPATH
-                strcat(path, ":");
-                strcat(path, LOCALMANPATH);
+                strlcat(path, ":", sizeof(path));
+                strlcat(path, LOCALMANPATH, sizeof(path));
 #endif
             }
         }

@@ -607,7 +607,8 @@ Search(Widget w, XEvent * event, String * params, Cardinal * num_params)
 
                     label = man_globals->manpage_title;
                     man_globals = GetGlobals(w2);
-                    strcpy(man_globals->manpage_title, label);
+                    strlcpy(man_globals->manpage_title, label,
+                            sizeof(man_globals->manpage_title));
                     ChangeLabel(man_globals->label, label);
                 }
             }

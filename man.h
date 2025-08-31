@@ -248,7 +248,7 @@ Boolean MakeHelpWidget(void);
 Boolean OpenHelpfile(ManpageGlobals * man_globals);
 
 /* man.c */
-Bool ReadManConfig(char manpath[]);
+Bool ReadManConfig(char manpath[], size_t manpath_size);
 int Man(void);
 
 /* misc.c */

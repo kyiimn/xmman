@@ -94,17 +94,18 @@ Man(void)
     if (ptr == NULL || streq(ptr, "") || ptr[strlen(ptr) - 1] == ':') {
         lang = getenv("LANG");
 #ifdef MANCONF
-        if (!ReadManConfig(manpath + strlen(manpath)))
+        if (!ReadManConfig(manpath + strlen(manpath),
+                           sizeof(manpath) - strlen(manpath)))
 #endif
         {
 #ifdef MANCONF
             if (manpath[strlen(manpath) - 1] != ':')
-                strcat(manpath, ":");
+                strlcat(manpath, ":", sizeof(manpath));
 #endif
-            strcat(manpath, SYSMANPATH);
+            strlcat(manpath, SYSMANPATH, sizeof(manpath));
 #ifdef LOCALMANPATH
-            strcat(manpath, ":");
-            strcat(manpath, LOCALMANPATH);
+            strlcat(manpath, ":", sizeof(manpath));
+            strlcat(manpath, LOCALMANPATH, sizeof(manpath));
 #endif
         }
     }
@@ -117,8 +118,8 @@ Man(void)
     for (path = manpath; (ptr = strchr(path, ':')) != NULL; path = ++ptr) {
         *ptr = '\0';
         if (lang != NULL) {
-            strcpy(buf, path);
-            strcat(buf, "/");
+            strlcpy(buf, path, sizeof(buf));
+            strlcat(buf, "/", sizeof(buf));
             strncat(buf, lang, sizeof(buf) - strlen(path) + 1);
             buf[sizeof(buf) - strlen(path) + 1] = '\0';
             ReadMandescFile(&list, buf);
@@ -126,8 +127,8 @@ Man(void)
         ReadMandescFile(&list, path);
     }
     if (lang != NULL) {
-        strcpy(buf, path);
-        strcat(buf, "/");
+        strlcpy(buf, path, sizeof(buf));
+        strlcat(buf, "/", sizeof(buf));
         strncat(buf, lang, sizeof(buf) - strlen(path) + 1);
         buf[sizeof(buf) - strlen(path) + 1] = '\0';
         ReadMandescFile(&list, buf);
@@ -310,8 +311,8 @@ ReadMandescFile(SectionList ** section_list, char *path)
                 char *s;
 
                 *cp++ = '\0';
-                strcpy(local_file, MAN);
-                strcat(local_file, string);
+                strlcpy(local_file, MAN, sizeof(local_file));
+                strlcat(local_file, string, sizeof(local_file));
                 if ((s = strchr(cp, '\t')) != NULL) {
                     *s++ = '\0';
                     if (streq(s, SUFFIX))
@@ -953,7 +954,7 @@ DumpManual(int number)
  */
 
 Bool
-ReadManConfig(char manpath[])
+ReadManConfig(char manpath[], size_t manpath_size)
 {
     FILE *fp;
     char line[BUFSIZ];
@@ -976,12 +977,12 @@ ReadManConfig(char manpath[])
         if (!path || *path == '#')
             return FALSE;
         if (firstpath) {
-            strcpy(manpath, path);
+            strlcpy(manpath, path, manpath_size);
             firstpath = FALSE;
         }
         else if (!strstr(manpath, path)) {
-            strcat(manpath, ":");
-            strcat(manpath, path);
+            strlcat(manpath, ":", manpath_size);
+            strlcat(manpath, path, manpath_size);
         }
     }
     fclose(fp);
@@ -998,7 +999,7 @@ ReadManConfig(char manpath[])
  */
 
 Bool
-ReadManConfig(char manpath[])
+ReadManConfig(char manpath[], size_t manpath_size)
 {
     FILE *fp;
     char line[BUFSIZ];
@@ -1016,12 +1017,12 @@ ReadManConfig(char manpath[])
         if (!path || *path == '#')
             return FALSE;
         if (firstpath) {
-            strcpy(manpath, path);
+            strlcpy(manpath, path, manpath_size);
             firstpath = FALSE;
         }
         else {
-            strcat(manpath, ":");
-            strcat(manpath, path);
+            strlcat(manpath, ":", manpath_size);
+            strlcat(manpath, path, manpath_size);
         }
     }
     fclose(fp);
@@ -1041,7 +1042,7 @@ ReadManConfig(char manpath[])
 #include <glob.h>
 
 Bool
-ReadManConfig(char manpath[])
+ReadManConfig(char manpath[], size_t manpath_size)
 {
     FILE *fp;
     char line[BUFSIZ];
@@ -1071,12 +1072,12 @@ ReadManConfig(char manpath[])
         for (i = 0; i < gs.gl_pathc; i++) {
 
             if (firstpath) {
-                strcpy(manpath, gs.gl_pathv[i]);
+                strlcpy(manpath, gs.gl_pathv[i], manpath_size);
                 firstpath = FALSE;
             }
             else {
-                strcat(manpath, ":");
-                strcat(manpath, gs.gl_pathv[i]);
+                strlcat(manpath, ":", manpath_size);
+                strlcat(manpath, gs.gl_pathv[i], manpath_size);
             }
         }                       /* for */
         globfree(&gs);
@@ -1094,7 +1095,7 @@ ReadManConfig(char manpath[])
  */
 
 Bool
-ReadManConfig(char manpath[])
+ReadManConfig(char manpath[], size_t manpath_size)
 {
     FILE *fp;
     char line[BUFSIZ];
@@ -1110,12 +1111,12 @@ ReadManConfig(char manpath[])
             continue;
         while ((path = strtok((char *) NULL, " \t\n"))) {
             if (firstpath) {
-                strcpy(manpath, path);
+                strlcpy(manpath, path);
                 firstpath = FALSE;
             }
             else {
-                strcat(manpath, ":");
-                strcat(manpath, path);
+                strlcat(manpath, ":", manpath_size);
+                strlcat(manpath, path, manpath_size);
             }
         }
     }

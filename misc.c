@@ -291,10 +291,9 @@ Xmkstemp (char *template)
     int fd = 0;
     char tmp[PATH_MAX];
 
-    if (strlen(template) >= sizeof(tmp))
-        return -1;
     /* save copy of unmodified template in case we have to try again */
-    strcpy(tmp, template);
+    if (strlcpy(tmp, template, sizeof(tmp)) >= sizeof(tmp))
+        return -1;
 
     do {
         if (fd == -1)
@@ -365,7 +364,7 @@ UncompressNamed(ManpageGlobals * man_globals, const char *filename,
  * the .Z extension.
  */
 
-    strcpy(tmp, MANTEMP);       /* get a temp file. */
+    strlcpy(tmp, MANTEMP, sizeof(tmp));       /* get a temp file. */
     fd = mkstemp(tmp);
     if (fd < 0) {
         PopupWarning(man_globals, "Error creating a temp file");
@@ -436,7 +435,11 @@ SgmlToRoffNamed(ManpageGlobals * man_globals, char *filename, char *output,
         return (FALSE);
     }
 
-    strcpy(tmp, MANTEMP);       /* get a temp file. */
+    /* get a temp file. */
+    if (strlcpy(tmp, MANTEMP, sizeof(tmp)) >= sizeof(tmp)) {
+        PopupWarning(man_globals, "Temp file name too long");
+        return FALSE;
+    }
     fd = mkstemp(tmp);
     if (fd < 0) {
         PopupWarning(man_globals, "Error creating a temp file");
@@ -508,7 +511,7 @@ Format(ManpageGlobals * man_globals, const char *entry)
                 if (line[4] != '/') {
                     char *ptr = NULL;
 
-                    strcpy(tmp, entry);
+                    strlcpy(tmp, entry, sizeof(tmp));
                     if ((ptr = strrchr(tmp, '/')) != NULL) {
                         *ptr = '\0';
                         if ((ptr = strrchr(tmp, '/')) != NULL)
@@ -532,7 +535,7 @@ Format(ManpageGlobals * man_globals, const char *entry)
     XtDispatchEvent(&event);
     XFlush(XtDisplay(man_globals->standby));
 
-    strcpy(tmp, MANTEMP);       /* Get a temp file. */
+    strlcpy(tmp, MANTEMP, sizeof(tmp));       /* Get a temp file. */
     fd = mkstemp(tmp);
     if (fd >= 0) {
         file = fdopen(fd, "r");
@@ -548,7 +551,7 @@ Format(ManpageGlobals * man_globals, const char *entry)
                      "temp file, try cleaning up /tmp");
         return NULL;
     }
-    strcpy(man_globals->tempfile, tmp);
+    strlcpy(man_globals->tempfile, tmp, sizeof(man_globals->tempfile));
 
     ParseEntry(entry, path, sect, NULL);
 
@@ -587,7 +590,7 @@ Format(ManpageGlobals * man_globals, const char *entry)
                  * write the man page to it.
                  */
 
-                strcpy(catdir, man_globals->save_file);
+                strlcpy(catdir, man_globals->save_file, sizeof(catdir));
                 if ((ptr = strrchr(catdir, '/')) != NULL) {
                     *ptr = '\0';
 
@@ -1095,7 +1098,7 @@ ParseEntry(const char *entry, char *path, char *sect, char *page)
 {
     char *c, temp[BUFSIZ];
 
-    strcpy(temp, entry);
+    strlcpy(temp, entry, sizeof(temp));
 
     c = strrchr(temp, '/');
     if (c == NULL)

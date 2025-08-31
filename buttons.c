@@ -332,7 +332,8 @@ StartManpage(ManpageGlobals * man_globals, Boolean help, Boolean page)
 
     if (page || help) {
         if (help)
-            strcpy(man_globals->manpage_title, "Xman Help");
+            strlcpy(man_globals->manpage_title, "Xman Help",
+                    sizeof(man_globals->manpage_title));
 
         if (man_globals->both_shown) {
             XtManageChild(dir);
