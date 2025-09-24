@@ -14,11 +14,12 @@
  * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#include <dix-config.h>
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
 
 #include <sys/types.h>
 #include <string.h>
-#include "os.h"
 
 #ifndef HAVE_STRLCPY
 /*

@@ -27,7 +27,7 @@ dist_help_DATA = xman.help
 
 AM_CFLAGS = $(CWARNFLAGS) $(XMAN_CFLAGS) -D_CONST_X_STRING \
 	-D_BSD_SOURCE -DHELPFILE=\"$(helpdir)/xman.help\"
-xman_LDADD = $(XMAN_LIBS)
+xman_LDADD = $(XMAN_LIBS) $(LIBOBJS)
 
 xman_SOURCES =	\
         buttons.c \
