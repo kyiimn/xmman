@@ -28,6 +28,10 @@ from the X Consortium.
 
 */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include <X11/X.h>
 #include <X11/Xos.h>
 #include <X11/Xlib.h>
