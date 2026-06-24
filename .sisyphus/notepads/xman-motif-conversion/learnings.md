@@ -300,3 +300,39 @@ Removed `#include <X11/Xaw/Dialog.h>` from misc.c since `dialogWidgetClass` and 
 - Created `app-defaults/Xmman` resource file — stripped all Xaw-specific resources (`XawPositionSimpleMenu`, `.showGrip`, `.orientation`, `.defaultDistance`, `.horizScroll`, `.vertScroll`), kept only Xt/Motif-compatible resources
 - No `#include <X11/Xaw/>` references remain in any .c file (except ScrollByL.c which is unused)
 - gcc build passes with zero errors (only pre-existing const-qualifier and deprecation warnings)
+
+## Wave 5 Integration Learnings (2026-06-24)
+
+### Font Resource Changes
+- The old `directoryFontNormal` Xt resource used `XtRFontStruct` to load an `XFontStruct *` — this is incompatible with Xft and was removed from `my_resources[]`.
+- Font loading now happens at widget creation time via `XmanLoadManpageFonts()` and `XmanLoadDirectoryFont()`, not via Xt resource conversion.
+- The `resources.fonts.directory` field (XFontStruct) is marked DEPRECATED in the struct but still exists; the `resources.fonts.directory_font` (XftFont) and `resources.fonts.manpage_fonts` (XmanFontSet) are the active fields.
+- Font validation check changed from `resources.fonts.directory` to `resources.manpage_font_normal` (string pattern).
+
+### Fallback Resources
+- Removed Xaw-specific fallback resources (`XtNsensitive` is Motif-compatible but was used for Xaw Command widget state).
+- Kept essential fallbacks: quitButton translations, manpageButton label, topLabel label.
+
+### App-Defaults
+- XtAppInitialize class name is "Xman", so the app-defaults file `Xman` is the primary one.
+- `Xmman` app-defaults file is supplementary (for future binary rename to `xmman`).
+- Both files are now installed via `dist_appdefault_DATA` in Makefile.am.
+
+### Callbacks & Translations
+- All Motif push button callbacks use `XmNactivateCallback` (replaces Xaw `XtNcallback`).
+- Button translations use `Arm()/Activate()/Disarm()` which are Motif PushButton actions.
+- WM_PROTOCOLS translations are properly set for: topBox (Quit), manpage (RemoveThisManpage), help (RemoveThisManpage), search (RemoveSearch).
+- XSetWMProtocols is called for each realized shell window.
+
+### Cursor Management
+- `AddCursor()` uses `XDefineCursor()` which works with any X window regardless of widget toolkit.
+- It checks `XtIsRealized()` before attempting to set the cursor.
+- `XRecolorCursor()` and `XQueryColors()` are used for cursor coloring — all Xlib-level calls that work fine with Motif.
+
+### Build Verification
+- `make` compiles with zero errors (only -Wdiscarded-qualifiers warnings from XtResource initializer const strings).
+- `ldd xman | grep -i xaw` returns empty (no Xaw dependency).
+- `ldd xman | grep -E 'libXm|libXft|fontconfig'` shows all three libraries.
+- `./xman -help` prints usage correctly.
+- `./xman -bothshown` starts under xvfb (BadWindow on shutdown is from xvfb cleanup, not an app bug).
+- Only Xaw references remaining are in ScrollByL.c/h/P.h (unused legacy files, kept for git history).

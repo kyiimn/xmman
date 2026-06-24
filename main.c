@@ -47,8 +47,6 @@ static void AdjustDefResources(void);
 #define Offset(field) (XtOffsetOf(Xman_Resources , field))
 
 static XtResource my_resources[] = {
-    {"directoryFontNormal", XtCFont, XtRFontStruct, sizeof(XFontStruct *),
-     Offset(fonts.directory), XtRString, DIRECTORY_NORMAL},
     {"manpageFontNormal", "FontPattern", XtRString, sizeof(char *),
      Offset(manpage_font_normal), XtRString, XMAN_MANPAGE_FONT},
     {"manpageFontBold", "FontPattern", XtRString, sizeof(char *),
@@ -97,12 +95,8 @@ static XtResource my_resources[] = {
 
 static String fallback_resources[] = {
     "Xman*quitButton.translations:	#override \\n   <Btn1Up>: Quit() reset()",
-    "Xman*helpButton.sensitive:                    FALSE",
-    "Xman*manpageButton.sensitive:                 FALSE",
-    "Xman*helpButton.Label:			Help",
-    "Xman*quitButton.Label:			Quit",
-    "Xman*manpageButton.Label:		        Manual Page",
-    "Xman*topLabel.label:         		        No App-Defaults File",
+    "Xman*manpageButton.Label:		Manual Page",
+    "Xman*topLabel.Label:			No App-Defaults File",
     NULL,
 };
 
@@ -199,8 +193,8 @@ main(int argc, char **argv)
 
     XtAppAddActions(app_con, xman_actions, XtNumber(xman_actions));
 
-    if (!resources.fonts.directory)
-        PrintError("Failed to get the directory font.");
+    if (!resources.manpage_font_normal)
+        PrintError("Failed to get the manpage font pattern.");
 
 #ifdef DEBUG
     printf("debugging mode\n");

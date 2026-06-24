@@ -61,7 +61,7 @@ DISTCHECK_CONFIGURE_FLAGS = --with-appdefaultdir=\$${datadir}/X11/app-defaults
 
 appdefaultdir = @appdefaultdir@
 
-dist_appdefault_DATA = app-defaults/Xman
+dist_appdefault_DATA = app-defaults/Xman app-defaults/Xmman
 
 MAINTAINERCLEANFILES = ChangeLog INSTALL
 
