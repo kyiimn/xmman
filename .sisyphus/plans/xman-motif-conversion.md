@@ -660,7 +660,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat: add ScrollMotive widget data structures and header`
   - Files: `scroll_motive.h`, `scroll_motiveP.h`
 
-- [ ] 6. Implement ScrollMotive Xft text renderer
+- [x] 6. Implement ScrollMotive Xft text renderer
 
   **What to do**:
   - Create `scroll_motive.c`: Begin implementation with Xft rendering core

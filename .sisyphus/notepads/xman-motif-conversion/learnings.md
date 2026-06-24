@@ -73,3 +73,17 @@
 ```
 gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/freetype2 -I/usr/include/libpng16
 ```
+
+## Task T6: scroll_motive.c Implementation
+
+### Key Findings
+- **CoreClassPart field order**: `superclass, class_name, widget_size, class_initialize, class_part_init, class_inited, initialize, initialize_hook, realize, ...` — missing `class_name` causes all subsequent fields to shift, producing cascading type errors.
+- **XmCompositeClassPart uses `XtInherit*` macros** (not `_XmInherit*`): `XtInheritGeometryManager`, `XtInheritChangeManaged`, `XtInheritInsertChild`, `XtInheritDeleteChild`. The `_XmInherit*` macros don't exist for these fields.
+- **No `XftDrawVisualOfScreen()` function exists**. Use `XGetWindowAttributes()` after realize to get the widget's actual visual from its window attributes. This is the correct way to get the visual for Xft rendering.
+- **No `w->core.foreground` field** in XmManager widgets — foreground is `smw->manager.foreground` (from XmManagerPart). Background is still `w->core.background_pixel`.
+- **XtCIndent is not a standard Xt resource class string** — must be defined locally as `"Indent"`.
+- **`XmUNSPECIFIED_PIXMAP`** is the correct sentinel for uninitialized Pixmap in Motif widgets.
+- **Clean compile** with: `gcc -c -I. -Wall -Wextra -Wno-unused-parameter scroll_motive.c -I/usr/include/freetype2 -I/usr/include/libpng16 $(pkg-config --cflags xft fontconfig) -I/usr/include/Xm`
+- **LSP false positives**: clangd may report errors about `ft2build.h` not found — this is a clangd include path issue, not a real compilation error.
+- **Anti-aliased ghosting prevention**: Clear background with `XClearArea` before drawing each text line to prevent leftover sub-pixel artifacts from previous font renderings.
+- **Xft color allocation pattern**: pixel → XQueryColor → XRenderColor → XftColorAllocValue. This ensures correct colors on any visual/colormap.
