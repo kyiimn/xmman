@@ -234,8 +234,6 @@ ManpageGlobals *InitPsuedoGlobals(void);
 Widget CreateManpage(FILE * file);
 void CreateManpageWidget(ManpageGlobals * man_globals, String name,
                          Boolean full_instance);
-void FormUpWidgets(Widget parent,
-                   const char **full_size, const char **half_size);
 void MakeDirectoryBox(ManpageGlobals * man_globals, Widget parent,
                       Widget * dir_disp, int section);
 void MakeSaveWidgets(ManpageGlobals * man_globals, Widget parent);

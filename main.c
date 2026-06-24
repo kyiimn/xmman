@@ -34,11 +34,12 @@ from the X Consortium.
  * Created:   October 22, 1987
  */
 
+#ifdef HAVE_CONFIG_H
+# include "config.h"
+#endif
+
 #include "globals.h"
 #include "xman_fonts.h"
-#ifndef ZERO
-#include <X11/Xaw/Cardinals.h>
-#endif /* ZERO */
 
 static void ArgError(int argc, char **argv);
 static void AdjustDefResources(void);

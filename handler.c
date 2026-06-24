@@ -122,7 +122,7 @@ ToggleBothShownState(ManpageGlobals * man_globals)
 
         label_str = SHOW_ONE;
 
-        XtSetArg(arglist[0], XtNpreferredPaneSize, resources.directory_height);
+        XtSetArg(arglist[0], XmNpreferredPaneSize, resources.directory_height);
         XtSetValues(dir, arglist, (Cardinal) 1);
 
         if (!man_globals->dir_shown) {
@@ -139,8 +139,12 @@ ToggleBothShownState(ManpageGlobals * man_globals)
     else
         ChangeLabel(man_globals->label, man_globals->manpage_title);
 
-    XtSetArg(arglist[0], XtNlabel, label_str);
-    XtSetValues(man_globals->both_screens_entry, arglist, ONE);
+    {
+        XmString xmstr = XmStringCreateLocalized(label_str);
+        XtSetArg(arglist[0], XmNlabelString, xmstr);
+        XtSetValues(man_globals->both_screens_entry, arglist, ONE);
+        XmStringFree(xmstr);
+    }
 
     /* if both are shown there is no need to switch between the two. */
 

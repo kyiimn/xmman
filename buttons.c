@@ -48,7 +48,7 @@ static void CreateOptionMenu(ManpageGlobals * man_globals, Widget parent);
 static void CreateSectionMenu(ManpageGlobals * man_globals, Widget parent);
 static void StartManpage(ManpageGlobals * man_globals, Boolean help,
                          Boolean page);
-static Widget *ConvertNamesToWidgets(Widget parent, const char **names);
+
 
 /*	Function Name: MakeTopBox
  *	Description: This function creates the top menu, in a shell widget.
@@ -745,120 +745,4 @@ MakeSaveWidgets(ManpageGlobals * man_globals, Widget parent)
     }
 }
 
-/*      Function Name: FormUpWidgets
- *      Description: Sizes widgets to look nice.
- *      Arguments: parent - the common parent of all the widgets.
- *                 full_size - array of widget names that will be full size.
- *                 half_size - array of widget names that will be half size.
- *      Returns: none
- */
 
-void
-FormUpWidgets(Widget parent, const char **full_size, const char **half_size)
-{
-    Widget *full_widgets, *half_widgets, *temp, long_widget;
-    Dimension longest, length, b_width;
-    int interior_dist;
-    Arg arglist[2];
-
-    full_widgets = ConvertNamesToWidgets(parent, full_size);
-    half_widgets = ConvertNamesToWidgets(parent, half_size);
-
-    long_widget = NULL;
-    longest = 0;
-    XtSetArg(arglist[0], XtNwidth, &length);
-    XtSetArg(arglist[1], XtNborderWidth, &b_width);
-
-/*
- * Find Longest widget.
- */
-
-    for (temp = full_widgets; *temp != (Widget) NULL; temp++) {
-        XtGetValues(*temp, arglist, (Cardinal) 2);
-        length += 2 * b_width;
-        if (length > longest) {
-            longest = length;
-            long_widget = *temp;
-        }
-    }
-
-    if (long_widget == (Widget) NULL) { /* Make sure we found one. */
-        PopupWarning(GetGlobals(parent),
-                     "Could not find longest widget, aborting...");
-        XtFree((char *) full_widgets);
-        XtFree((char *) half_widgets);
-        return;
-    }
-
-/*
- * Set all other full_widgets to this length.
- */
-
-    for (temp = full_widgets; *temp != (Widget) NULL; temp++)
-        if (long_widget != *temp) {
-            Dimension width, border_width;
-
-            XtSetArg(arglist[0], XtNborderWidth, &border_width);
-            XtGetValues(*temp, arglist, (Cardinal) 1);
-
-            width = longest - 2 * border_width;
-            XtSetArg(arglist[0], XtNwidth, width);
-            XtSetValues(*temp, arglist, (Cardinal) 1);
-        }
-
-/*
- * Set all the half widgets to the right length.
- */
-
-    XtSetArg(arglist[0], XtNdefaultDistance, &interior_dist);
-    XtGetValues(parent, arglist, (Cardinal) 1);
-
-    for (temp = half_widgets; *temp != (Widget) NULL; temp++) {
-        Dimension width, border_width;
-
-        XtSetArg(arglist[0], XtNborderWidth, &border_width);
-        XtGetValues(*temp, arglist, (Cardinal) 1);
-
-        width = (int) (longest - interior_dist) / 2 - 2 * border_width;
-        XtSetArg(arglist[0], XtNwidth, width);
-        XtSetValues(*temp, arglist, (Cardinal) 1);
-    }
-
-    XtFree((char *) full_widgets);
-    XtFree((char *) half_widgets);
-}
-
-/*      Function Name: ConvertNamesToWidgets
- *      Description: Converts a list of names into a list of widgets.
- *      Arguments: parent - the common parent of these widgets.
- *                 names - an array of widget names.
- *      Returns: an array of widget id's.
- */
-
-static Widget *
-ConvertNamesToWidgets(Widget parent, const char **names)
-{
-    const char **temp;
-    Widget *ids, *temp_ids;
-    int count;
-
-    for (count = 0, temp = names; *temp != NULL; count++, temp++);
-
-    ids = (Widget *) XtMalloc((count + 1) * sizeof(Widget));
-
-    for (temp_ids = ids; *names != NULL; names++, temp_ids++) {
-        *temp_ids = XtNameToWidget(parent, *names);
-        if (*temp_ids == NULL) {
-            char error_buf[BUFSIZ];
-
-            snprintf(error_buf, sizeof(error_buf),
-                     "Could not find widget named '%s'", *names);
-            PrintError(error_buf);
-            XtFree((char *) ids);
-            return (NULL);
-        }
-    }
-
-    *temp_ids = (Widget) NULL;
-    return (ids);
-}

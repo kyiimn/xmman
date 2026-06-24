@@ -288,3 +288,15 @@ Changed `XtPopdown(XtParent(XtParent(w)))` → `XtPopdown(XtParent(w))` in handl
 ### Removed Xaw Include
 
 Removed `#include <X11/Xaw/Dialog.h>` from misc.c since `dialogWidgetClass` and `XawDialogAddButton` are no longer used there.
+
+### Wave 4 — handler.c, main.c, buttons.c, app-defaults
+
+- `XtNpreferredPaneSize` → `XmNpreferredPaneSize` for XmPanedWindow (handler.c line 125)
+- `XtNlabel` → `XmNlabelString` requires `XmStringCreateLocalized()` / `XmStringFree()` wrapper — Motif labels use XmString, not plain C strings
+- Removed `#include <X11/Xaw/Cardinals.h>` from main.c — `ZERO` and `ONE` macros already defined in man.h
+- Added `#ifdef HAVE_CONFIG_H / #include "config.h" / #endif` guard to main.c top
+- Removed `FormUpWidgets()` and `ConvertNamesToWidgets()` from buttons.c — dead code, no callers remain after Motif conversion
+- Removed `FormUpWidgets` declaration from man.h
+- Created `app-defaults/Xmman` resource file — stripped all Xaw-specific resources (`XawPositionSimpleMenu`, `.showGrip`, `.orientation`, `.defaultDistance`, `.horizScroll`, `.vertScroll`), kept only Xt/Motif-compatible resources
+- No `#include <X11/Xaw/>` references remain in any .c file (except ScrollByL.c which is unused)
+- gcc build passes with zero errors (only pre-existing const-qualifier and deprecation warnings)

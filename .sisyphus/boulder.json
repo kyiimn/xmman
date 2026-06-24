@@ -6,7 +6,21 @@
     "ses_107d9a318ffeWnDmgtQHtOSXOo",
     "ses_107d9af1cffex2cRxtu27pBgVZ",
     "ses_107d8f372ffetfshWyPl7UjXBB",
-    "ses_107d9323fffeB1gzQupPFXrugv"
+    "ses_107d9323fffeB1gzQupPFXrugv",
+    "ses_107d47648ffeM7RnPVDyljFW4U",
+    "ses_107d0d891ffeYwMZK5n6tEg094",
+    "ses_107ce0073ffeE21QjbwMoc1hoK",
+    "ses_107cb0610ffeYPqxjntBt2zu5z",
+    "ses_107c52d02ffeapdb2Tio9zRslV",
+    "ses_107c2cf75ffeUsdhkPIfcUpf2H",
+    "ses_107bef4caffe5bQW7fo18Fo4AF",
+    "ses_107bd0b55ffe92oY7zuUl1Qw3R",
+    "ses_107b98ec0ffeV0La7tQ27uYeCU",
+    "ses_107b507c3ffeSE0bTpjYnQ0op0",
+    "ses_107af3b1dffetVU7fgu75XVlLn",
+    "ses_107aabd58ffehQLbnqhbLt0FYl",
+    "ses_107a884f2ffeAGGGIMQP7wEY38",
+    "ses_1079cf102ffecCMSFLwGfIIdPS"
   ],
   "plan_name": "xman-motif-conversion",
   "agent": "atlas",
@@ -19,6 +33,132 @@
       "agent": "Sisyphus-Junior",
       "category": "quick",
       "updated_at": "2026-06-24T05:45:35.196Z"
+    },
+    "todo:3": {
+      "task_key": "todo:3",
+      "task_label": "3",
+      "task_title": "Create Xft font utility subsystem (xft_utils.c/h)",
+      "session_id": "ses_107d47648ffeM7RnPVDyljFW4U",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T05:50:45.396Z"
+    },
+    "todo:4": {
+      "task_key": "todo:4",
+      "task_label": "4",
+      "task_title": "Create font configuration and fallback system",
+      "session_id": "ses_107d0d891ffeYwMZK5n6tEg094",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-06-24T05:53:57.243Z"
+    },
+    "todo:5": {
+      "task_key": "todo:5",
+      "task_label": "5",
+      "task_title": "Create ScrollMotive data structures and header (scroll_motive.h)",
+      "session_id": "ses_107ce0073ffeE21QjbwMoc1hoK",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-06-24T05:56:05.314Z"
+    },
+    "todo:6": {
+      "task_key": "todo:6",
+      "task_label": "6",
+      "task_title": "Implement ScrollMotive Xft text renderer",
+      "session_id": "ses_107cb0610ffeYPqxjntBt2zu5z",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:03:20.434Z"
+    },
+    "todo:7": {
+      "task_key": "todo:7",
+      "task_label": "7",
+      "task_title": "Implement ScrollMotive scrollbar integration",
+      "session_id": "ses_107c52d02ffeapdb2Tio9zRslV",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-06-24T06:06:28.859Z"
+    },
+    "todo:8": {
+      "task_key": "todo:8",
+      "task_label": "8",
+      "task_title": "Implement ScrollMotive nroff parser (bold/italic/symbol)",
+      "session_id": "ses_107c2cf75ffeUsdhkPIfcUpf2H",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:10:36.275Z"
+    },
+    "todo:9": {
+      "task_key": "todo:9",
+      "task_label": "9",
+      "task_title": "Implement ScrollMotive file loading and line management",
+      "session_id": "ses_107bef4caffe5bQW7fo18Fo4AF",
+      "agent": "Sisyphus-Junior",
+      "category": "unspecified-high",
+      "updated_at": "2026-06-24T06:12:29.393Z"
+    },
+    "todo:10": {
+      "task_key": "todo:10",
+      "task_label": "10",
+      "task_title": "Integrate ScrollMotive with man page display (OpenFile, expose)",
+      "session_id": "ses_107bd0b55ffe92oY7zuUl1Qw3R",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:15:17.812Z"
+    },
+    "todo:11": {
+      "task_key": "todo:11",
+      "task_label": "11",
+      "task_title": "Convert TopBox (form/label/commands) to XmForm/XmLabel/XmPushButton",
+      "session_id": "ses_107b98ec0ffeV0La7tQ27uYeCU",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:20:52.599Z"
+    },
+    "todo:12": {
+      "task_key": "todo:12",
+      "task_label": "12",
+      "task_title": "Convert option menu to XmMenuBar + XmCascadeButton",
+      "session_id": "ses_107b507c3ffeSE0bTpjYnQ0op0",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:26:48.580Z"
+    },
+    "todo:15": {
+      "task_key": "todo:15",
+      "task_label": "15",
+      "task_title": "Convert directory list (viewport+list) to XmScrolledWindow+XmList",
+      "session_id": "ses_107af3b1dffetVU7fgu75XVlLn",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:32:09.528Z"
+    },
+    "todo:16": {
+      "task_key": "todo:16",
+      "task_label": "16",
+      "task_title": "Convert search dialog (XawDialog) to custom XmForm dialog",
+      "session_id": "ses_107aabd58ffehQLbnqhbLt0FYl",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:34:47.402Z"
+    },
+    "todo:17": {
+      "task_key": "todo:17",
+      "task_label": "17",
+      "task_title": "Convert save/standby/warning dialogs to XmDialogShell + XmMessageBox",
+      "session_id": "ses_107a884f2ffeAGGGIMQP7wEY38",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:44:49.531Z"
+    },
+    "final-wave:f1": {
+      "task_key": "final-wave:f1",
+      "task_label": "F1",
+      "task_title": "**Plan Compliance Audit** — `oracle`",
+      "session_id": "ses_1079cf102ffecCMSFLwGfIIdPS",
+      "agent": "Sisyphus-Junior",
+      "category": "deep",
+      "updated_at": "2026-06-24T06:52:13.074Z"
     }
   }
 }
