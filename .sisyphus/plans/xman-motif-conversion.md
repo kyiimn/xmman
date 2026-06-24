@@ -1502,7 +1502,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `ui: convert save/standby/warning dialogs to XmDialogShell + XmMessageBox`
   - Files: `buttons.c`, `misc.c`
 
-- [ ] 18. Convert help window to Motif
+- [x] 18. Convert help window to Motif
 
   **What to do**:
   - The help window reuses `CreateManpageWidget()` with `full_instance=FALSE`
