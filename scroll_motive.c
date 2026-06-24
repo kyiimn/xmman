@@ -4,7 +4,7 @@
  * XmDrawingArea-based man page renderer using Xft for anti-aliased
  * text rendering. Replaces the original ScrollByLine Xaw widget.
  *
- * Copyright (c) 2026 xman Motif/Xft conversion project
+ * Copyright (c) 2026 xmman Motif/Xft conversion project
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -33,7 +33,7 @@
 
 #include "scroll_motiveP.h"
 #include "xft_utils.h"
-#include "xman_fonts.h"
+#include "xmman_fonts.h"
 
 #define XtCIndent "Indent"
 
@@ -376,7 +376,7 @@ _ScrollMotiveRealize(Widget w, XtValueMask *mask,
 
     if (smw->scroll.render_ctx.draw == NULL) {
         XtAppError(XtWidgetToApplicationContext(w),
-                   "xman: Failed to create Xft drawing context.\n");
+                   "xmman: Failed to create Xft drawing context.\n");
         return;
     }
 

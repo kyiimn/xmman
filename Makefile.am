@@ -20,16 +20,16 @@
 #  PERFORMANCE OF THIS SOFTWARE.
 
 SUBDIRS = man
-bin_PROGRAMS = xman
+bin_PROGRAMS = xmman
 
 helpdir=@HELPDIR@
-dist_help_DATA = xman.help
+dist_help_DATA = xmman.help
 
-AM_CFLAGS = $(CWARNFLAGS) $(XMAN_CFLAGS) $(XM_CFLAGS) $(XFT_CFLAGS) -D_CONST_X_STRING \
-	-D_BSD_SOURCE -DHELPFILE=\"$(helpdir)/xman.help\" -DHAVE_CONFIG_H
-xman_LDADD = $(XMAN_LIBS) $(LIBOBJS)
+AM_CFLAGS = $(CWARNFLAGS) $(XMMAN_CFLAGS) $(XM_CFLAGS) $(XFT_CFLAGS) -D_CONST_X_STRING \
+	-D_BSD_SOURCE -DHELPFILE=\"$(helpdir)/xmman.help\" -DHAVE_CONFIG_H
+xmman_LDADD = $(XMMAN_LIBS) $(LIBOBJS)
 
-xman_SOURCES =	\
+xmman_SOURCES =	\
         buttons.c \
         defs.h \
         globals.c \
@@ -52,8 +52,8 @@ xman_SOURCES =	\
         vendor.h \
         xft_utils.c \
         xft_utils.h \
-        xman_fonts.c \
-        xman_fonts.h
+        xmman_fonts.c \
+        xmman_fonts.h
 
 # App default files
 
@@ -61,7 +61,7 @@ DISTCHECK_CONFIGURE_FLAGS = --with-appdefaultdir=\$${datadir}/X11/app-defaults
 
 appdefaultdir = @appdefaultdir@
 
-dist_appdefault_DATA = app-defaults/Xman app-defaults/Xmman
+dist_appdefault_DATA = app-defaults/XmMan app-defaults/Xmman
 
 MAINTAINERCLEANFILES = ChangeLog INSTALL
 

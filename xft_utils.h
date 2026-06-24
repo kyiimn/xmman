@@ -1,10 +1,10 @@
 /*
- * xft_utils.h — Xft font utility subsystem for xman Motif/Xft conversion
+ * xft_utils.h — Xft font utility subsystem for xmman Motif/Xft conversion
  *
  * Provides font loading with CJK fallback chains, rendering context management,
  * and convenience metric functions for the ScrollMotive man page renderer.
  *
- * Copyright (c) 2026 xman Motif/Xft conversion project
+ * Copyright (c) 2026 xmman Motif/Xft conversion project
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -20,7 +20,7 @@
 #include <X11/Xft/Xft.h>
 
 /*
- * XmanFontSet — Holds 4 font variants for man page rendering
+ * XmManFontSet — Holds 4 font variants for man page rendering
  * (normal, bold, italic, symbol) — all monospace for column alignment
  */
 typedef struct {
@@ -28,7 +28,7 @@ typedef struct {
     XftFont *bold;
     XftFont *italic;
     XftFont *symbol;
-} XmanFontSet;
+} XmManFontSet;
 
 /*
  * XftRenderingContext — Drawing context for Xft text rendering
@@ -42,10 +42,10 @@ typedef struct {
 } XftRenderingContext;
 
 /* Font loading with fallback chains */
-XmanFontSet *XftLoadFontSet(Display *dpy, const char *normal_pattern,
+XmManFontSet *XftLoadFontSet(Display *dpy, const char *normal_pattern,
                             const char *bold_pattern, const char *italic_pattern,
                             const char *symbol_pattern);
-void XftFreeFontSet(Display *dpy, XmanFontSet *fonts);
+void XftFreeFontSet(Display *dpy, XmManFontSet *fonts);
 
 /* Individual font loading with fallback */
 XftFont *XftFontOpenWithFallback(Display *dpy, int screen, const char *primary,

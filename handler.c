@@ -29,7 +29,7 @@ from the X Consortium.
 */
 
 /*
- * xman - X window system manual page display program.
+ * xmman - X window system manual page display program.
  * Author:    Chris D. Peterson, MIT Project Athena
  * Created:   October 29, 1987
  */
@@ -43,9 +43,9 @@ from the X Consortium.
 #include "vendor.h"
 
 #ifdef RELEASE_VERSION
-#define XMAN_VERSION "Xman Version " PACKAGE_VERSION " - X11R" RELEASE_VERSION
+#define XMMAN_VERSION "XmMan Version " PACKAGE_VERSION " - X11R" RELEASE_VERSION
 #else
-#define XMAN_VERSION "Xman Version " PACKAGE_VERSION
+#define XMMAN_VERSION "XmMan Version " PACKAGE_VERSION
 #endif
 
 static void PutUpManpage(ManpageGlobals * man_globals, FILE * file);
@@ -306,7 +306,7 @@ SaveFormattedPage(Widget w, XEvent * event, String * params,
 
     if (*num_params != 1) {
         XtAppWarning(XtWidgetToApplicationContext(w),
-                     "Xman - SaveFormattedPage: This action routine requires one argument.");
+                     "XmMan - SaveFormattedPage: This action routine requires one argument.");
         return;
     }
 
@@ -352,7 +352,7 @@ SaveFormattedPage(Widget w, XEvent * event, String * params,
     case 'c':
         break;
     default:
-        PopupWarning(man_globals, "Xman - SaveFormattedPage: "
+        PopupWarning(man_globals, "XmMan - SaveFormattedPage: "
                      "Unknown argument must be either 'Save' or 'Cancel'.");
         return;
     }
@@ -387,7 +387,7 @@ GotoPage(Widget w, XEvent * event, String * params, Cardinal * num_params)
 
     if (*num_params != 1) {
         XtAppWarning(XtWidgetToApplicationContext(w),
-                     "Xman - GotoPage: This action routine requires one argument.");
+                     "XmMan - GotoPage: This action routine requires one argument.");
         return;
     }
 
@@ -421,14 +421,14 @@ GotoPage(Widget w, XEvent * event, String * params, Cardinal * num_params)
         break;
     default:
         XtAppWarning(XtWidgetToApplicationContext(w),
-                     "Xman - GotoPage: Unknown argument must be "
+                     "XmMan - GotoPage: Unknown argument must be "
                      "either Manpage or Directory.");
         return;
     }
 }
 
 /*      Function Name: Quit.
- *      Description: Quits Xman.
+ *      Description: Quits XmMan.
  *      Arguments: w - any widget.
  *                 event - NOT USED.
  *                 params, num_params - NOT USED.
@@ -443,7 +443,7 @@ Quit(Widget w, XEvent * event, String * params, Cardinal * num_params)
 }
 
 /*      Function Name: PopupHelp
- *      Description: Pops up xman's help.
+ *      Description: Pops up xmman's help.
  *      Arguments: w - NOT USED.
  *                 event - NOT USED.
  *                 params, num_params - NOT USED.
@@ -574,7 +574,7 @@ Search(Widget w, XEvent * event, String * params, Cardinal * num_params)
 
     if ((*num_params < 1) || (*num_params > 2)) {
         XtAppWarning(XtWidgetToApplicationContext(w),
-                     "Xman - Search: This action routine requires one or two arguments.");
+                     "XmMan - Search: This action routine requires one or two arguments.");
         return;
     }
 
@@ -593,7 +593,7 @@ Search(Widget w, XEvent * event, String * params, Cardinal * num_params)
         break;
     default:
         XtAppWarning(XtWidgetToApplicationContext(w),
-                     "Xman - Search: First parameter unknown.");
+                     "XmMan - Search: First parameter unknown.");
         file = NULL;
         break;
     }
@@ -622,7 +622,7 @@ Search(Widget w, XEvent * event, String * params, Cardinal * num_params)
             break;
         default:
             XtAppWarning(XtWidgetToApplicationContext(w),
-                         "Xman - Search: Second parameter unknown.");
+                         "XmMan - Search: Second parameter unknown.");
             break;
         }
     else {
@@ -648,5 +648,5 @@ ShowVersion(Widget w, XEvent * event, String * params, Cardinal * num_params)
 {
     ManpageGlobals *man_globals = GetGlobals(w);
 
-    ChangeLabel(man_globals->label, XMAN_VERSION);
+    ChangeLabel(man_globals->label, XMMAN_VERSION);
 }

@@ -4,7 +4,7 @@
  * XmDrawingArea-based man page renderer using Xft for anti-aliased
  * text. Replaces the old ScrollByLine Xaw widget.
  *
- * Copyright (c) 2026 xman Motif/Xft conversion project
+ * Copyright (c) 2026 xmman Motif/Xft conversion project
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -27,7 +27,7 @@
  ***********************************************************************/
 
 /* Resource names */
-#define XtNmanFontSet       "manFontSet"         /* XmanFontSet * */
+#define XtNmanFontSet       "manFontSet"         /* XmManFontSet * */
 #define XtNmanPageFile      "manPageFile"         /* FILE * */
 #define XtNmanIndent        "manIndent"           /* Dimension */
 #define XtNmanForceVert     "manForceVert"        /* Boolean */

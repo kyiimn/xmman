@@ -29,7 +29,7 @@ from the X Consortium.
 */
 
 /*
- * xman - X window system manual page display program.
+ * xmman - X window system manual page display program.
  * Author:    Chris D. Peterson, MIT Project Athena
  * Created:   August 15, 1988
  */

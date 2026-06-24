@@ -1,8 +1,8 @@
 *input:				True
 
 *topBox:			True
-*topBox.Title:			Xman
-*topBox.IconName:		Xman
+*topBox.Title:			XmMan
+*topBox.IconName:		XmMan
 
 *manualBrowser.Title:		Manual Page
 *manualBrowser.IconName:	Manual Page
@@ -26,7 +26,7 @@
 *topLabel.BorderWidth:		0
 *search*label.BorderWidth:	0
 
-*search*dialog*value:		Xman
+*search*dialog*value:		XmMan
 
 !*optionMenu.Label:		Options
 !*sectionMenu.Label:		Sections
@@ -38,7 +38,7 @@
 *helpButton.Tip:		Open help browser
 
 *quitButton.Label:		Quit
-*quitButton.Tip:		Quit Xman
+*quitButton.Tip:		Quit XmMan
 
 *manpageButton.Label:		Manual Page
 *manpageButton.Tip:		Open new manpage browser

@@ -33,7 +33,7 @@ from the X Consortium.
 
 #include "man.h"
 
-extern Xman_Resources resources;        /* Resource manager sets these. */
+extern XmMan_Resources resources;        /* Resource manager sets these. */
 
 /* bookkeeping global variables. */
 

@@ -1,5 +1,11 @@
-xman (xmman) is a graphical manual page browser using OpenMotif (Xm)
+xmman (XmMan) is a graphical manual page browser using OpenMotif (Xm)
 with Xft font rendering for the man page display area.
+
+xmman is a fork of xman, the classic X Window System manual page browser
+originally written for the Xaw (Athena Widget Set) toolkit. This fork ports
+the entire UI from Xaw to OpenMotif, replacing all Xaw widgets with Motif
+equivalents and adding direct Xft font rendering for the man page display
+area.
 
 The man page body text uses monospace font D2Coding (with fallback chain:
 Noto Sans Mono CJK KR → DejaVu Sans Mono → monospace → fixed).

@@ -29,7 +29,7 @@ from the X Consortium.
 */
 
 /*
- * xman - X window system manual page display program.
+ * xmman - X window system manual page display program.
  * Author:    Chris D. Peterson, MIT Project Athena
  * Created:   October 27, 1987
  */
@@ -83,7 +83,7 @@ PopupWarning(ManpageGlobals * man_globals, const char *string)
     Boolean hasPosition;
     XmString msg;
 
-    snprintf(buffer, sizeof(buffer), "Xman Warning: %s", string);
+    snprintf(buffer, sizeof(buffer), "XmMan Warning: %s", string);
     hasPosition = FALSE;
     if (top) {
         n = 0;
@@ -137,7 +137,7 @@ PopupWarning(ManpageGlobals * man_globals, const char *string)
 void
 PrintError(const char *string)
 {
-    fprintf(stderr, "Xman Error: %s\n", string);
+    fprintf(stderr, "XmMan Error: %s\n", string);
     exit(EXIT_FAILURE);
 }
 
@@ -654,7 +654,7 @@ ConstructCommand(char *cmdbuf, const char *path,
      * by the Linux man command:
      *  + Obtain a string of letters from the following sources in order
      *    of preference:
-     *    + a command line option (not implemented in xman; it's probably not
+     *    + a command line option (not implemented in xmman; it's probably not
      *      useful)
      *    + the first line of the manpage source, if it is of the form:
      *      '\" <string>
@@ -1155,12 +1155,12 @@ GetGlobals(Widget w)
 
     if (temp == NULL)
         XtAppError(XtWidgetToApplicationContext(w),
-                   "Xman: Could not locate widget in tree, exiting");
+                   "XmMan: Could not locate widget in tree, exiting");
 
     if (XFindContext(XtDisplay(w), XtWindow(w),
                      manglobals_context, &data) != XCSUCCESS)
         XtAppError(XtWidgetToApplicationContext(w),
-                   "Xman: Could not find global data, exiting");
+                   "XmMan: Could not find global data, exiting");
 
     return ((ManpageGlobals *) data);
 }
@@ -1182,7 +1182,7 @@ SaveGlobals(Widget w, ManpageGlobals * globals)
     if (XSaveContext(XtDisplay(w), XtWindow(w), manglobals_context,
                      (caddr_t) globals) != XCSUCCESS)
         XtAppError(XtWidgetToApplicationContext(w),
-                   "Xman: Could not save global data, are you out of memory?");
+                   "XmMan: Could not save global data, are you out of memory?");
 }
 
 /*      Function Name: RemoveGlobals
@@ -1200,5 +1200,5 @@ RemoveGlobals(Widget w)
     if (XDeleteContext(XtDisplay(w), XtWindow(w),
                        manglobals_context) != XCSUCCESS)
         XtAppError(XtWidgetToApplicationContext(w),
-                   "Xman: Could not remove global data?");
+                   "XmMan: Could not remove global data?");
 }

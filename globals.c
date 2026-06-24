@@ -31,7 +31,7 @@ from the X Consortium.
 
 #include "globals.h"
 
-Xman_Resources resources;       /* Resource manager sets these. */
+XmMan_Resources resources;       /* Resource manager sets these. */
 
 /* bookkeeping global variables. */
 

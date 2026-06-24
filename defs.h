@@ -29,7 +29,7 @@ from the X Consortium.
 */
 
 /*
- * xman - X window system manual page display program.
+ * xmman - X window system manual page display program.
  * Author:    Chris D. Peterson, MIT Project Athena
  * Created:   October 22, 1987
  */
@@ -39,12 +39,12 @@ from the X Consortium.
 #endif
 
 #ifndef HELPFILE
-#define HELPFILE "/usr/lib/X11/xman.help"  /* name of the default helpfile. */
+#define HELPFILE "/usr/lib/X11/xmman.help"  /* name of the default helpfile. */
 #endif
 
 /* The default cursors */
 
-#define XMAN_CURSOR "left_ptr"          /* Top level cursor. */
+#define XMMAN_CURSOR "left_ptr"          /* Top level cursor. */
 #define HELP_CURSOR "left_ptr"          /* The help cursor. */
 #define MANPAGE_CURSOR "left_ptr"       /* The manpage cursor. */
 #define SEARCH_ENTRY_CURSOR "question_arrow"    /* The search text widget
@@ -111,7 +111,7 @@ from the X Consortium.
 #define HANDLE_ROFFSEQ
 #endif
 
-#define DEFAULT_WIDTH 500       /* The default width of xman. */
+#define DEFAULT_WIDTH 500       /* The default width of xmman. */
 #define SECTALLOC  8            /* The number of entries allocated
                                    at a time for the manual structures. */
 #define ENTRYALLOC 100          /* The number of entries allocated
@@ -128,7 +128,7 @@ from the X Consortium.
 
 #define FILE_SAVE "yes"
 #define CANCEL_FILE_SAVE "no"
-#define MANTEMP "/tmp/xmanXXXXXX"
+#define MANTEMP "/tmp/xmmanXXXXXX"
 
 /*
  * Macro Definitions.

@@ -83,7 +83,7 @@ from the X Consortium.
 
 /* Font configuration and fallback system. */
 
-#include "xman_fonts.h"
+#include "xmman_fonts.h"
 
 /* program specific header files. */
 
@@ -103,21 +103,21 @@ from the X Consortium.
  * Assigning values here allows the user of Bitwise Or.
  */
 
-typedef struct _XmanFonts {
+typedef struct _XmManFonts {
     XFontStruct *directory;         /* DEPRECATED: The font for the directory.  */
-    XmanFontSet *manpage_fonts;      /* Xft font set for manpage rendering. */
+    XmManFontSet *manpage_fonts;      /* Xft font set for manpage rendering. */
     XftFont *directory_font;        /* Xft font for directory entries. */
-} XmanFonts;
+} XmManFonts;
 
-typedef struct _XmanCursors {
-    Cursor top,                 /* The top Cursor, default for xman. */
+typedef struct _XmManCursors {
+    Cursor top,                 /* The top Cursor, default for xmman. */
      help,                      /* The top cursor for the help menu. */
      manpage,                   /* The cursor for the Manpage. */
      search_entry;              /* The cursor for the text widget in the
                                    search box. */
     Pixel fg_color;             /* foreground color of cursors. */
     Pixel bg_color;             /* background color of cursors. */
-} XmanCursors;
+} XmManCursors;
 
 typedef struct _ManPageWidgets {
     Widget manpage,             /* The manual page window (scrolled) */
@@ -197,9 +197,9 @@ typedef struct _ManpageGlobals {
 
 /* Resource manager sets these. */
 
-typedef struct _Xman_Resources {
-    XmanFonts fonts;            /* The fonts used for the man pages. */
-    XmanCursors cursors;        /* The cursors for xman. */
+typedef struct _XmMan_Resources {
+    XmManFonts fonts;            /* The fonts used for the man pages. */
+    XmManCursors cursors;        /* The cursors for xmman. */
     Boolean show_help_syntax;   /* True if syntax message should be dumped to
                                    stdout. */
     Boolean both_shown_initial; /* The initial state of the manual pages
@@ -217,7 +217,7 @@ typedef struct _Xman_Resources {
     char *manpage_font_italic;
     char *manpage_font_symbol;
     char *directory_font_normal;
-} Xman_Resources;
+} XmMan_Resources;
 
 /************************************************************
  *

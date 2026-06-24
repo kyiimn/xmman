@@ -23,8 +23,8 @@ dnl Process this file with autoconf to create configure.
 
 # Initialize Autoconf
 AC_PREREQ([2.60])
-AC_INIT([xman], [1.2.0],
-        [https://gitlab.freedesktop.org/xorg/app/xman/-/issues/], [xman])
+AC_INIT([xmman], [1.2.0],
+        [https://gitlab.freedesktop.org/xorg/app/xmman/-/issues/], [xmman])
 AC_CONFIG_SRCDIR([Makefile.am])
 AC_CONFIG_HEADERS([config.h])
 # Set common system defines for POSIX extensions, such as _GNU_SOURCE
@@ -62,7 +62,7 @@ AC_REPLACE_FUNCS([strlcat strlcpy])
 
 AC_ARG_WITH(helpdir,
         AS_HELP_STRING([--with-helpdir=<path>],
-                       [Set default directory for xman.help (default: ${datadir}/X11)]),
+                       [Set default directory for xmman.help (default: ${datadir}/X11)]),
         [HELPDIR="$withval"],
         [HELPDIR=${datadir}/X11])
 AC_SUBST([HELPDIR])
@@ -111,11 +111,11 @@ AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
 
 # Core X dependencies
-PKG_CHECK_MODULES(XMAN, [xproto >= 7.0.17 xt])
+PKG_CHECK_MODULES(XMMAN, [xproto >= 7.0.17 xt])
 
-# Merge Motif and Xft flags into XMAN variables for build convenience
-XMAN_CFLAGS="$XMAN_CFLAGS $XM_CFLAGS $XFT_CFLAGS"
-XMAN_LIBS="$XMAN_LIBS $XM_LIBS $XFT_LIBS"
+# Merge Motif and Xft flags into XMMAN variables for build convenience
+XMMAN_CFLAGS="$XMMAN_CFLAGS $XM_CFLAGS $XFT_CFLAGS"
+XMMAN_LIBS="$XMMAN_LIBS $XM_LIBS $XFT_LIBS"
 
 AC_ARG_WITH(manconfig,
         AS_HELP_STRING([--with-manconfig=<filename>],

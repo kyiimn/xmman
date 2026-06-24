@@ -29,7 +29,7 @@ from the X Consortium.
 */
 
 /*
- * xman - X window system manual page display program.
+ * xmman - X window system manual page display program.
  * Author:    Chris D. Peterson, MIT Project Athena
  * Created:   January 19, 1988
  */
@@ -66,7 +66,7 @@ MakeHelpWidget(void)
         return (FALSE);
     }
 
-    ChangeLabel(man_globals->label, "Xman Help");
+    ChangeLabel(man_globals->label, "XmMan Help");
 
     XtManageChild(man_globals->manpagewidgets.manpage);
     XtRealizeWidget(help_widget);

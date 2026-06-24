@@ -1,7 +1,7 @@
 /*
- * xft_utils.c — Xft font utility subsystem for xman Motif/Xft conversion
+ * xft_utils.c — Xft font utility subsystem for xmman Motif/Xft conversion
  *
- * Copyright (c) 2026 xman Motif/Xft conversion project
+ * Copyright (c) 2026 xmman Motif/Xft conversion project
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -48,7 +48,7 @@ XftFontOpenWithFallback(Display *dpy, int screen, const char *primary,
         if (font != NULL)
             return font;
 
-        fprintf(stderr, "xman: font pattern \"%s\" not found", patterns[i]);
+        fprintf(stderr, "xmman: font pattern \"%s\" not found", patterns[i]);
         if (i < (int)(sizeof(patterns) / sizeof(patterns[0])) - 1)
             fprintf(stderr, ", trying fallback\n");
         else
@@ -57,12 +57,12 @@ XftFontOpenWithFallback(Display *dpy, int screen, const char *primary,
 
     font = XftFontOpenName(dpy, screen, absolute_fallback);
     if (font != NULL) {
-        fprintf(stderr, "xman: using \"%s\" as absolute fallback\n",
+        fprintf(stderr, "xmman: using \"%s\" as absolute fallback\n",
                 absolute_fallback);
         return font;
     }
 
-    fprintf(stderr, "xman: FATAL: could not load any font, not even \"%s\"\n",
+    fprintf(stderr, "xmman: FATAL: could not load any font, not even \"%s\"\n",
             absolute_fallback);
     return NULL;
 }
@@ -78,27 +78,27 @@ XftFontOpenWithFallback(Display *dpy, int screen, const char *primary,
  * Bold, italic, and symbol fonts that fail all fallbacks fall back to
  * the normal font so rendering never dereferences a NULL pointer.
  */
-XmanFontSet *
+XmManFontSet *
 XftLoadFontSet(Display *dpy, const char *normal_pattern,
                const char *bold_pattern, const char *italic_pattern,
                const char *symbol_pattern)
 {
     int screen = DefaultScreen(dpy);
-    XmanFontSet *fonts;
+    XmManFontSet *fonts;
 
-    fonts = (XmanFontSet *)malloc(sizeof(XmanFontSet));
+    fonts = (XmManFontSet *)malloc(sizeof(XmManFontSet));
     if (fonts == NULL) {
-        fprintf(stderr, "xman: out of memory allocating XmanFontSet\n");
+        fprintf(stderr, "xmman: out of memory allocating XmManFontSet\n");
         return NULL;
     }
-    memset(fonts, 0, sizeof(XmanFontSet));
+    memset(fonts, 0, sizeof(XmManFontSet));
 
     fonts->normal = XftFontOpenWithFallback(dpy, screen, normal_pattern,
                                              "Noto Sans Mono CJK KR",
                                              "DejaVu Sans Mono",
                                              "monospace", "fixed");
     if (fonts->normal == NULL) {
-        fprintf(stderr, "xman: could not load normal font or any fallback\n");
+        fprintf(stderr, "xmman: could not load normal font or any fallback\n");
         free(fonts);
         return NULL;
     }
@@ -108,7 +108,7 @@ XftLoadFontSet(Display *dpy, const char *normal_pattern,
                                            "DejaVu Sans Mono:style=Bold",
                                            "monospace:bold", "fixed");
     if (fonts->bold == NULL) {
-        fprintf(stderr, "xman: bold font fallback to normal\n");
+        fprintf(stderr, "xmman: bold font fallback to normal\n");
         fonts->bold = fonts->normal;
     }
 
@@ -117,7 +117,7 @@ XftLoadFontSet(Display *dpy, const char *normal_pattern,
                                             "DejaVu Sans Mono:style=Oblique",
                                             "monospace:italic", "fixed");
     if (fonts->italic == NULL) {
-        fprintf(stderr, "xman: italic font fallback to normal\n");
+        fprintf(stderr, "xmman: italic font fallback to normal\n");
         fonts->italic = fonts->normal;
     }
 
@@ -126,7 +126,7 @@ XftLoadFontSet(Display *dpy, const char *normal_pattern,
                                             "DejaVu Sans Mono",
                                             "monospace", "fixed");
     if (fonts->symbol == NULL) {
-        fprintf(stderr, "xman: symbol font fallback to normal\n");
+        fprintf(stderr, "xmman: symbol font fallback to normal\n");
         fonts->symbol = fonts->normal;
     }
 
@@ -140,7 +140,7 @@ XftLoadFontSet(Display *dpy, const char *normal_pattern,
  * not aliased to the normal font) to avoid double-free.
  */
 void
-XftFreeFontSet(Display *dpy, XmanFontSet *fonts)
+XftFreeFontSet(Display *dpy, XmManFontSet *fonts)
 {
     if (fonts == NULL)
         return;
@@ -177,14 +177,14 @@ XftCreateContext(Display *dpy, Drawable drawable, Visual *visual,
 
     ctx = (XftRenderingContext *)malloc(sizeof(XftRenderingContext));
     if (ctx == NULL) {
-        fprintf(stderr, "xman: out of memory allocating XftRenderingContext\n");
+        fprintf(stderr, "xmman: out of memory allocating XftRenderingContext\n");
         return NULL;
     }
     memset(ctx, 0, sizeof(XftRenderingContext));
 
     ctx->draw = XftDrawCreate(dpy, drawable, visual, colormap);
     if (ctx->draw == NULL) {
-        fprintf(stderr, "xman: XftDrawCreate failed\n");
+        fprintf(stderr, "xmman: XftDrawCreate failed\n");
         free(ctx);
         return NULL;
     }
@@ -207,7 +207,7 @@ XftCreateContext(Display *dpy, Drawable drawable, Visual *visual,
     }
 
     if (!XftColorAllocValue(dpy, visual, colormap, &render_color, &ctx->fg_color)) {
-        fprintf(stderr, "xman: XftColorAllocValue failed for fg_color\n");
+        fprintf(stderr, "xmman: XftColorAllocValue failed for fg_color\n");
         XftDrawDestroy(ctx->draw);
         free(ctx);
         return NULL;
@@ -228,7 +228,7 @@ XftCreateContext(Display *dpy, Drawable drawable, Visual *visual,
     }
 
     if (!XftColorAllocValue(dpy, visual, colormap, &render_color, &ctx->bg_color)) {
-        fprintf(stderr, "xman: XftColorAllocValue failed for bg_color\n");
+        fprintf(stderr, "xmman: XftColorAllocValue failed for bg_color\n");
         XftColorFree(dpy, visual, colormap, &ctx->fg_color);
         XftDrawDestroy(ctx->draw);
         free(ctx);

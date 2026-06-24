@@ -29,7 +29,7 @@ from the X Consortium.
 */
 
 /*
- * xman - X window system manual page display program.
+ * xmman - X window system manual page display program.
  * Author:    Chris D. Peterson, MIT Project Athena
  * Created:   October 27, 1987
  */
@@ -87,7 +87,7 @@ MakeTopBox(void)
                                  NULL, (Cardinal) 0);
 
     /* topLabel: spans full width, attached to top of form */
-    label_str = XmStringCreateLocalized("Xman");
+    label_str = XmStringCreateLocalized("XmMan");
     n = 0;
     XtSetArg(args[n], XmNlabelString, label_str); n++;
     XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
@@ -347,11 +347,11 @@ CreateManpageWidget(ManpageGlobals * man_globals,
 
     {
         ScrollMotiveWidget smw = (ScrollMotiveWidget) mpw->manpage;
-        smw->scroll.fonts = XmanLoadManpageFonts(XtDisplay(mpw->manpage),
+        smw->scroll.fonts = XmManLoadManpageFonts(XtDisplay(mpw->manpage),
                                                   XScreenNumberOfScreen(XtScreen(mpw->manpage)));
         if (smw->scroll.fonts == NULL) {
             XtAppError(XtWidgetToApplicationContext(mpw->manpage),
-                       "xman: Failed to load manpage fonts. "
+                        "xmman: Failed to load manpage fonts. "
                        "Install D2Coding or a fixed font.\n");
             return;
         }
@@ -382,7 +382,7 @@ StartManpage(ManpageGlobals * man_globals, Boolean help, Boolean page)
 
     if (page || help) {
         if (help)
-            strlcpy(man_globals->manpage_title, "Xman Help",
+            strlcpy(man_globals->manpage_title, "XmMan Help",
                     sizeof(man_globals->manpage_title));
 
         if (man_globals->both_shown) {

@@ -1,16 +1,16 @@
 
 
-XMAN is an X Window System manual browsing tool.
+XMMAN is an X Window System manual browsing tool.
 
 
 
 GETTING STARTED
 
-By default, xman starts by creating a small window that contains three
+By default, xmman starts by creating a small window that contains three
 "buttons" (places on which to click a pointer button).  Two of these
 buttons, Help and Quit, are self-explanatory.  The third, Manual Page,
 creates a new manual page browser window; you may use this button to
-open a new manual page any time xman is running.
+open a new manual page any time xmman is running.
 
 A new manual page starts up displaying this help information.  The
 manual page contains three sections.  In the upper left corner are two
@@ -19,18 +19,18 @@ menu is popped up.  The contents of these menus is described below.
 Directly to the right of the menu buttons is an informational display.
 This display usually contains the name of the directory or manual page
 being displayed.  It is also used to display warning messages and the
-current version of xman.  The last and largest section is the
+current version of xmman.  The last and largest section is the
 information display.  This section of the application contains either a
 list of manual pages to choose from or the text of a manual page.
 
-To use xman pull down the Sections menu to select a manual section.
+To use xmman pull down the Sections menu to select a manual section.
 When the section is displayed, click the left pointer button on the name
-of the manual page that you would like to see.  Xman will replace the
+of the manual page that you would like to see.  XmMan will replace the
 directory listing with the manual page you selected.
 
 That should be enough to get you started.  Once you understand the
-basics of how to use xman, take a look at the rest of this file to see
-the advanced features that are available to make using xman fast and
+basics of how to use xmman, take a look at the rest of this file to see
+the advanced features that are available to make using xmman fast and
 efficient.
 
 
@@ -51,15 +51,15 @@ scroll up one page.
 
 RESIZING WINDOWS
 
-You can resize any of the windows in xman with your window manager, and
-xman will do the best it can to resize everything internally into a
+You can resize any of the windows in xmman with your window manager, and
+xmman will do the best it can to resize everything internally into a
 useful configuration.  The only control over the internal arrangement
 that you have is moving the border between the manual page and directory
 when both are displayed.  This is done by clicking and holding the any
 pointer button when the cursor is over the small square (grip) on the
 right side of the screen.  The grip is located on the horizontal line
 which separates the panes.  The grip may be moved up and down to resize
-the panes of the screen, and when the pointer button is released xman
+the panes of the screen, and when the pointer button is released xmman
 will move the pane boundary to the newly specified location.
 
 
@@ -103,11 +103,11 @@ Remove This Man Page	Remove this manual page, do not quit.
 
 Open New Man Page	Pop up a new manual page browser window.
 
-Show Version		Print the current version of xman to the
+Show Version		Print the current version of xmman to the
 			information display window.  Please include the
 			version number when reporting bugs.
 
-Quit			Close all xman windows and quit xman.
+Quit			Close all xmman windows and quit xmman.
 
 
 SUMMARY OF BASIC ACTIONS
@@ -140,17 +140,17 @@ In scroll bars:
 
 SEARCHING
 
-Xman has a built-in searching utility that allows the user to search the
+XmMan has a built-in searching utility that allows the user to search the
 entire manual page tree for a specific topic (manual page search) or a
 keyword (apropos search).  The search dialogue box can be activated from
 the Options menu, or by the key Control-s.  If the search is started
-from the small initial topbox xman will open a new manual page if the
+from the small initial topbox xmman will open a new manual page if the
 search was successful, and fail silently if the search was unsuccessful.
 
 Manual page searches are performed starting in the currently displayed
 section.  If no match is found then the remaining sections are searched
 in the order that the sections appear in the Sections menu, starting at
-the top.  The current version of xman immediately displays the first
+the top.  The current version of xmman immediately displays the first
 manual page that it finds.  If the manual page cannot be found that fact
 is noted in the informational display.
 
@@ -161,25 +161,25 @@ contain the keyword specified.
 
 KEYBOARD ACCELERATORS
 
-Xman contains a set of preinstalled keyboard accelerators.  These are a
+XmMan contains a set of preinstalled keyboard accelerators.  These are a
 set of key bindings that perform many of the same operations as the menu
 items.  Since it is not necessary to pull down the menu,  these actions
 can be performed more quickly, hence the name accelerators.
 
-The default key bindings for xman are:
+The default key bindings for xmman are:
 
 Anywhere:
 
-	Control - c		Exit xman
+	Control - c		Exit xmman
 	Control - h		Create the help window
 	Control - n		Create a new man page
-	Control - q		Exit xman
+	Control - q		Exit xmman
 	Control - s             Create a search popup
 
 In a manual page, directory, or help window:
 
 	Control - r		Remove this manual page or help display
-	Control - v		Show the current version of xman
+	Control - v		Show the current version of xmman
 
 In a manual page or directory:
 
@@ -201,14 +201,14 @@ Note: Control-s does not have any effect in the help window.
 
 FURTHER INFORMATION
 
-Xman is highly customizable.  Through the X resource database a user can
+XmMan is highly customizable.  Through the X resource database a user can
 customize the look and feel of this application so that it meets a
 preferred style of interaction.  Almost any configuration that is
 available dynamically can be specified through resources.  This includes
 changing the size, color, and fonts, starting with no topbox, showing
 both screens, and rebinding the keyboard accelerators.
 
-The information on customizing xman is contained in the xman manual
+The information on customizing xmman is contained in the xmman manual
 page, I will leave it to you to figure out how to find and display that
 information :-)
 
@@ -220,7 +220,7 @@ CREDITS
 
 Version:	Use 'Show Version' menu item.
 Written By:	Chris D. Peterson - formerly MIT X Consortium
-Based Upon:	Xman for X10 by Barry Shein - Boston University
+Based Upon:	XmMan for X10 by Barry Shein - Boston University
 
 Copyright 1988, 1989 X Consortium
 Edited by Donna Converse and Dave Sternlicht

@@ -1,12 +1,12 @@
-! Xmman - Motif version of Xman resource defaults
+! Xmman - Motif version of XmMan resource defaults
 !
-! Resource file for the xmman binary (class: Xmman)
+! Resource file for the xmman binary (class: XmMan)
 
 *input:				True
 
 *topBox:			True
-*topBox.Title:			Xman
-*topBox.IconName:		Xman
+*topBox.Title:			XmMan
+*topBox.IconName:		XmMan
 
 *manualBrowser.Title:		Manual Page
 *manualBrowser.IconName:	Manual Page

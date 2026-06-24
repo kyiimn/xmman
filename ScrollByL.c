@@ -745,7 +745,7 @@ SetValuesHook(Widget w, ArgList args, Cardinal * num_args)
 /*
  * A little design philosophy is probably wise to include at this point.
  *
- * One of the things that I has hoped to achieve with xman is to make the
+ * One of the things that I has hoped to achieve with xmman is to make the
  * viewing of manpage not only easy for the nieve user, but also fast for
  * the experienced user, I wanted to be able to use it too.  To achieve this
  * I end up sacrificing a bit of start up time for the manual data structure.

@@ -1,17 +1,17 @@
 '\" t
 .\"
-.TH XMAN 1 2023-02-04 __xorgversion__
+.TH XMMAN 1 2023-02-04 __xorgversion__
 .SH NAME
-xman \- Manual page display program for the X Window System
+xmman \- Manual page display program for the X Window System
 .SH SYNOPSIS
-.B xman
+.B xmman
 [
 .I \-options
 \&.\|.\|. ]
 .SH DESCRIPTION
-.B Xman
+.B xmman
 is a manual page browser.
-The default size of the initial \fBxman\fP window is small
+The default size of the initial \fBxmman\fP window is small
 so that you can leave it running throughout your entire login session.
 In the initial window there are three options:
 \fIHelp\fP will pop up a window with on-line help,
@@ -20,13 +20,13 @@ and \fIManual Page\fP will pop up a window with a manual page browser in it.
 Typing Control-S will pop up a window prompting for a specific manual
 page to display.
 You may display more than one manual page browser window at a time
-from a single execution of \fBxman\fP.
+from a single execution of \fBxmman\fP.
 .PP
-For further information on using \fBxman\fP,
+For further information on using \fBxmman\fP,
 please read the on-line help information.
-Most of this manual will discuss customization of \fBxman\fP.
+Most of this manual will discuss customization of \fBxmman\fP.
 .SH "OPTIONS"
-\fBXman\fP supports all standard Toolkit command line arguments (see
+\fBXmMan\fP supports all standard Toolkit command line arguments (see
 .BR X (__miscmansuffix__)).
 The following additional arguments are supported.
 .sp
@@ -45,11 +45,11 @@ Sets the size and location of all the Manual Pages.
 Print a usage message and exit.
 .IP "\fB\-version\fP"
 Print the program version and exit.
-.SH "CUSTOMIZING XMAN"
-.B Xman
+.SH "CUSTOMIZING XMMAN"
+.B XmMan
 allows customization of both the directories to be searched for manual pages,
 and the name that each directory will map to in the \fISections\fP menu.
-.B Xman
+.B XmMan
 determines which directories it will search by reading the
 \fBMANPATH\fP environment variable.
 If no \fBMANPATH\fP is found then the directory
@@ -57,7 +57,7 @@ If no \fBMANPATH\fP is found then the directory
 is searched on most systems.
 This environment variable
 is expected to be a colon-separated list of directories for
-.B xman
+.B xmman
 to search.
 .sp
 .nf
@@ -65,7 +65,7 @@ setenv MANPATH /mit/kit/man:/usr/man
 .fi
 .PP
 By default,
-.B xman
+.B xmman
 will search each of the following directories (in each of the directories
 specified in the users MANPATH) for manual pages.  If manual pages exist
 in that directory then they are added to list of manual pages for
@@ -100,7 +100,7 @@ If there is no directory called
 pages in any of the directories called \fImano\fP then no menu item will be
 displayed for the section called \fI(o) Old\fP.
 .SH "BSD AND LINUX SYSTEMS"
-In newer BSD and Linux systems, \fBXman\fP will search for a file named
+In newer BSD and Linux systems, \fBXmMan\fP will search for a file named
 \fB/etc/man.conf\fP which will contain the list of directories containing
 manual pages.
 See
@@ -143,7 +143,7 @@ no default sections
 .fi
 .sp
 anywhere in your mandesc file.
-This keeps \fBxman\fP from searching the default manual sections
+This keeps \fBxmman\fP from searching the default manual sections
 \fIin that directory only\fP.
 As an example, suppose you want to do the same thing as above,
 but you don't think that it is useful to have the \fISystem Calls\fP
@@ -165,7 +165,7 @@ n(n) New
 o(o) Old
 .fi
 .sp
-.B Xman
+.B XmMan
 will read any section that is of the form \fIman<character>\fP,
 where <character> is an upper or lower case letter (they are treated distinctly)
 or a numeral (0-9).
@@ -176,13 +176,13 @@ and
 will not search directories that are non-standard.
 .SH WIDGETS
 In order to specify resources, it is useful to know the hierarchy of
-the widgets which compose \fBxman\fR.
+the widgets which compose \fBxmman\fR.
 In the notation below, indentation indicates hierarchical structure.
 The widget class name is given first, followed by the widget instance name.
 .sp
 .nf
 .ft CW
-Xman xman       \fI(This widget is never used)\fP
+XmMan xmman       \fI(This widget is never used)\fP
         TopLevelShell  topBox
                 Form  form
                         Label  topLabel
@@ -262,8 +262,8 @@ Xman xman       \fI(This widget is never used)\fP
 .ft
 .fi
 .SH "APPLICATION RESOURCES"
-\fBxman\fP has the following application-specific resources which allow
-customizations unique to \fBxman\fP.
+\fBxmman\fP has the following application-specific resources which allow
+customizations unique to \fBxmman\fP.
 .TP 18
 \fBmanualFontNormal\fP (Class \fBFont\fP)
 The font to use for normal text in the manual pages.
@@ -315,10 +315,10 @@ Either `true' or `false,' determines whether the directory listing is
 vertically or horizontally organized.
 The default is horizontal (false).
 .SH "GLOBAL ACTIONS"
-\fBXman\fP defines all user interaction through global actions.
+\fBXmMan\fP defines all user interaction through global actions.
 This allows the user to modify the translation table of any widget,
 and bind any event to the new user action.
-The list of actions supported by \fBxman\fP are:
+The list of actions supported by \fBxmman\fP are:
 .TP 1.5i
 .B GotoPage(\fIpage\fB)
 When used in a manual page display window this will allow the user to
@@ -326,7 +326,7 @@ move between a directory and manual page display.
 The \fIpage\fP argument can be either \fBDirectory\fP or \fBManualPage\fP.
 .TP 1.5i
 .B Quit()
-This action may be used anywhere, and will exit \fBxman\fP.
+This action may be used anywhere, and will exit \fBxmman\fP.
 .TP 1.5i
 .B Search(\fItype\fB, \fIaction\fB)
 Only useful when used in a search popup, this action will cause the search
@@ -335,9 +335,9 @@ value widget.
 This action will also pop down the search widget.
 The \fItype\fP argument can be either \fBApropos\fP, \fBManpage\fP, or
 \fBCancel\fP.
-If an \fIaction\fP of \fBOpen\fP is specified then \fBxman\fP
+If an \fIaction\fP of \fBOpen\fP is specified then \fBxmman\fP
 will open a new manual page to display the results of the search, otherwise
-\fBxman\fP will attempt to display the results in the parent of the search popup.
+\fBxmman\fP will attempt to display the results in the parent of the search popup.
 .TP 1.5i
 .B PopupHelp()
 This action may be used anywhere, and will popup the help widget.
@@ -358,21 +358,21 @@ associated with it.
 .TP 1.5i
 .B SaveFormattedPage(\fIaction\fP)
 This action can only be used in the \fBlikeToSave\fP popup widget,
-and tells \fBxman\fP whether to \fBSave\fP or \fBCancel\fP a save of the
+and tells \fBxmman\fP whether to \fBSave\fP or \fBCancel\fP a save of the
 manual page that has just been formatted.
 .TP 1.5i
 .B ShowVersion()
 This action may be called from any manual page or help display window,
 and will cause the informational display line to show the current version of
-.BR xman .
+.BR xmman .
 .SH FILES
 .IP "\fI<manpath directory>\fP/man<\fIcharacter\fP>" 2.5i
 .IP "\fI<manpath directory>\fP/cat<\fIcharacter\fP>"
 .IP "\fI<manpath directory>\fP/mandesc"
-.IP __apploaddir__/Xman
+.IP __apploaddir__/XmMan
 specifies required resources.
 .IP /tmp
-.B Xman
+.B XmMan
 creates temporary files in /tmp for all unformatted man pages and all apropos
 searches.
 .SH "SEE ALSO"
@@ -395,7 +395,7 @@ to get the name of a resource file that overrides the global resources
 stored in the RESOURCE_MANAGER property.
 .TP 1.5i
 .B XAPPLRESDIR
-A string that will have ``Xman'' appended to it.  This string will be
+A string that will have ``XmMan'' appended to it.  This string will be
 the full path name of a user app-defaults file to be merged into the
 resource database after the system app-defaults file, and before
 the resources that are attached to the display.

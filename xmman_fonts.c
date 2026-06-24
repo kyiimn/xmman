@@ -1,7 +1,7 @@
 /*
- * xman_fonts.c — Font loading and fallback system for xman Motif/Xft conversion
+ * xmman_fonts.c — Font loading and fallback system for xmman Motif/Xft conversion
  *
- * Copyright (c) 2026 xman Motif/Xft conversion project
+ * Copyright (c) 2026 xmman Motif/Xft conversion project
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -22,7 +22,7 @@
 #include <X11/Xft/Xft.h>
 #include <fontconfig/fontconfig.h>
 
-#include "xman_fonts.h"
+#include "xmman_fonts.h"
 #include "man.h"
 
 /*
@@ -51,30 +51,30 @@ XftFontBuildPattern(const char *family, int size, int weight, int slant)
 }
 
 /*
- * XmanLoadManpageFonts — Load all 4 font variants for man page rendering.
+ * XmManLoadManpageFonts — Load all 4 font variants for man page rendering.
  *
  * Uses the D2Coding monospace fallback chain via XftLoadFontSet.
  * Returns NULL if even the absolute fallback fails.
  */
-XmanFontSet *
-XmanLoadManpageFonts(Display *dpy, int screen)
+XmManFontSet *
+XmManLoadManpageFonts(Display *dpy, int screen)
 {
     char *normal_pat, *bold_pat, *italic_pat, *symbol_pat;
-    XmanFontSet *fonts;
+    XmManFontSet *fonts;
 
     (void)screen;
 
-    normal_pat = XftFontBuildPattern(XMAN_MANPAGE_FONT,
-                                     XMAN_MANPAGE_FONT_SIZE,
+    normal_pat = XftFontBuildPattern(XMMAN_MANPAGE_FONT,
+                                     XMMAN_MANPAGE_FONT_SIZE,
                                      FC_WEIGHT_MEDIUM, FC_SLANT_ROMAN);
-    bold_pat = XftFontBuildPattern(XMAN_MANPAGE_FONT,
-                                   XMAN_MANPAGE_FONT_SIZE,
+    bold_pat = XftFontBuildPattern(XMMAN_MANPAGE_FONT,
+                                   XMMAN_MANPAGE_FONT_SIZE,
                                    FC_WEIGHT_BOLD, FC_SLANT_ROMAN);
-    italic_pat = XftFontBuildPattern(XMAN_MANPAGE_FONT,
-                                     XMAN_MANPAGE_FONT_SIZE,
+    italic_pat = XftFontBuildPattern(XMMAN_MANPAGE_FONT,
+                                     XMMAN_MANPAGE_FONT_SIZE,
                                      FC_WEIGHT_MEDIUM, FC_SLANT_ITALIC);
-    symbol_pat = XftFontBuildPattern(XMAN_MANPAGE_FONT,
-                                     XMAN_MANPAGE_FONT_SIZE,
+    symbol_pat = XftFontBuildPattern(XMMAN_MANPAGE_FONT,
+                                     XMMAN_MANPAGE_FONT_SIZE,
                                      FC_WEIGHT_MEDIUM, FC_SLANT_ROMAN);
 
     fonts = XftLoadFontSet(dpy, normal_pat, bold_pat, italic_pat, symbol_pat);
@@ -88,35 +88,35 @@ XmanLoadManpageFonts(Display *dpy, int screen)
 }
 
 /*
- * XmanLoadDirectoryFont — Load the proportional UI font for directory entries.
+ * XmManLoadDirectoryFont — Load the proportional UI font for directory entries.
  *
  * Uses the NanumMyeongjo proportional fallback chain.
  * Returns NULL only if even "fixed" cannot be loaded.
  */
 XftFont *
-XmanLoadDirectoryFont(Display *dpy, int screen)
+XmManLoadDirectoryFont(Display *dpy, int screen)
 {
     char *pattern;
     XftFont *font;
 
-    pattern = XftFontBuildPattern(XMAN_UI_FONT, XMAN_DIRECTORY_FONT_SIZE,
+    pattern = XftFontBuildPattern(XMMAN_UI_FONT, XMMAN_DIRECTORY_FONT_SIZE,
                                   FC_WEIGHT_MEDIUM, FC_SLANT_ROMAN);
 
     font = XftFontOpenWithFallback(dpy, screen, pattern,
-                                   XMAN_UI_FALLBACK_1, XMAN_UI_FALLBACK_2,
-                                   XMAN_UI_FALLBACK_3, XMAN_UI_FALLBACK_4);
+                                   XMMAN_UI_FALLBACK_1, XMMAN_UI_FALLBACK_2,
+                                   XMMAN_UI_FALLBACK_3, XMMAN_UI_FALLBACK_4);
 
     free(pattern);
     return font;
 }
 
 /*
- * XmanFreeFonts — Free all loaded fonts in the XmanFonts struct.
+ * XmManFreeFonts — Free all loaded fonts in the XmManFonts struct.
  *
- * Does NOT free the fonts struct itself (it's part of Xman_Resources).
+ * Does NOT free the fonts struct itself (it's part of XmMan_Resources).
  */
 void
-XmanFreeFonts(Display *dpy, XmanFonts *fonts)
+XmManFreeFonts(Display *dpy, XmManFonts *fonts)
 {
     if (fonts == NULL)
         return;

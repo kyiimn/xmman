@@ -4,7 +4,7 @@
  * Instance and class record definitions for the ScrollMotive widget,
  * an XmDrawingArea subclass that renders man pages via Xft.
  *
- * Copyright (c) 2026 xman Motif/Xft conversion project
+ * Copyright (c) 2026 xmman Motif/Xft conversion project
  *
  * Permission to use, copy, modify, distribute, and sell this software and its
  * documentation for any purpose is hereby granted without fee, provided that
@@ -52,7 +52,7 @@ extern ScrollMotiveClassRec scrollMotiveClassRec;
  ***********************************************************************/
 
 typedef struct _ScrollMotivePart {
-    XmanFontSet    *fonts;
+    XmManFontSet    *fonts;
     XftRenderingContext render_ctx;
     int             h_width;
     int             font_height;
