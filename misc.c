@@ -43,7 +43,6 @@ from the X Consortium.
 #include <X11/Xos.h>            /* sys/types.h and unistd.h included in here */
 #include <sys/stat.h>
 #include <errno.h>
-#include <X11/Xaw/Dialog.h>
 #include <X11/Shell.h>
 
 static FILE *Uncompress(ManpageGlobals * man_globals, const char *filename);
@@ -78,10 +77,11 @@ void
 PopupWarning(ManpageGlobals * man_globals, const char *string)
 {
     int n;
-    Arg wargs[3];
+    Arg wargs[5];
     Dimension topX, topY;
     char buffer[BUFSIZ];
     Boolean hasPosition;
+    XmString msg;
 
     snprintf(buffer, sizeof(buffer), "Xman Warning: %s", string);
     hasPosition = FALSE;
@@ -110,11 +110,19 @@ PopupWarning(ManpageGlobals * man_globals, const char *string)
         n++;
         warnShell = XtCreatePopupShell("warnShell", transientShellWidgetClass,
                                        initial_widget, wargs, n);
-        XtSetArg(wargs[0], XtNlabel, buffer);
-        warnDialog = XtCreateManagedWidget("warnDialog", dialogWidgetClass,
-                                           warnShell, wargs, 1);
-        XawDialogAddButton(warnDialog, "dismiss", PopdownWarning,
-                           (XtPointer) warnShell);
+        msg = XmStringCreateLocalized(buffer);
+        n = 0;
+        XtSetArg(wargs[n], XmNmessageString, msg); n++;
+        XtSetArg(wargs[n], XmNdialogType, XmDIALOG_WARNING); n++;
+        warnDialog = XmCreateMessageBox(warnShell, "warnDialog", wargs, n);
+        XmStringFree(msg);
+        XtUnmanageChild(XmMessageBoxGetChild(warnDialog,
+                                              XmDIALOG_CANCEL_BUTTON));
+        XtUnmanageChild(XmMessageBoxGetChild(warnDialog,
+                                              XmDIALOG_HELP_BUTTON));
+        XtAddCallback(warnDialog, XmNokCallback, PopdownWarning,
+                      (XtPointer) warnShell);
+        XtManageChild(warnDialog);
         XtRealizeWidget(warnShell);
         Popup(warnShell, XtGrabNone);
     }

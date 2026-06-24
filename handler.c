@@ -359,7 +359,7 @@ SaveFormattedPage(Widget w, XEvent * event, String * params,
  */
 
     remove(man_globals->tempfile);
-    XtPopdown(XtParent(XtParent(w)));
+    XtPopdown(XtParent(w));
 }
 
 /*      Function Name: GotoPage

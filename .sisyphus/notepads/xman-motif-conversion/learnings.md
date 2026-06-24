@@ -251,3 +251,40 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **No changes to handler.c, buttons.c, or misc.c**: All Xaw references in those files are in other functions (MakeSaveWidgets, FormUpWidgets, PopWarning) and outside scope
 - **LSP clangd error about ft2build.h**: Pre-existing false positive, gcc compiles clean
 - **XmNeditMode = XmSINGLE_LINE_EDIT**: Required for XmTextField to behave as single-line input (matches Xaw dialog's text widget behavior)
+
+## Dialog Conversion: Xaw → Motif (MakeSaveWidgets, PopupWarning, SaveFormattedPage)
+
+### Key Pattern: XmCreateMessageBox inside transientShell
+
+Using `XmCreateMessageBox()` inside manually-created `transientShellWidgetClass` preserves the original widget hierarchy structure. This is critical because `XtParent()` patterns are used throughout the codebase.
+
+**Why NOT use XmCreateQuestionDialog/XmCreateWarningDialog/XmCreateInformationDialog?**
+These convenience functions create their own `DialogShell` internally, which changes the widget hierarchy. The codebase relies on `XtParent()` patterns to traverse from child widgets to their shell parents. By creating the `transientShellWidgetClass` manually and then using `XmCreateMessageBox()` as a child, we preserve the original hierarchy: `transientShell → xmMessageBox`.
+
+### Widget Storage Conventions
+
+- **man_globals->standby**: Stores the MessageBox child widget (was `labelWidgetClass`). `XtParent(standby)` = transientShell, preserving all existing `XtParent()` patterns.
+- **man_globals->save**: Stores the transientShell (unchanged convention). `XtParent(save)` = parent widget, which matches the original (arguably buggy) behavior.
+- **warnDialog**: Static variable, stores MessageBox widget (was `dialogWidgetClass`). `XtParent(warnDialog)` would give the shell.
+
+### XmCreateMessageBox Requires XtManageChild
+
+Unlike `XtCreateManagedWidget`, `XmCreateMessageBox` creates but does NOT manage the widget. Must call `XtManageChild()` after creation.
+
+### Button Management
+
+- `XmMessageBoxGetChild(dialog, XmDIALOG_CANCEL_BUTTON)` — get Cancel button for unmanaging
+- `XmMessageBoxGetChild(dialog, XmDIALOG_HELP_BUTTON)` — get Help button for unmanaging
+- Use `XmNokLabelString` and `XmNcancelLabelString` to customize button text
+
+### Callback Pattern for Save Dialog
+
+Instead of Xaw action-based dialog buttons (XawDialogAddButton → action table), Motif uses `XmNokCallback` and `XmNcancelCallback`. Thin callback wrappers (`SaveOkCallback`, `SaveCancelCallback`) invoke the existing `SaveFormattedPage` action with appropriate parameters.
+
+### SaveFormattedPage XtPopdown Fix
+
+Changed `XtPopdown(XtParent(XtParent(w)))` → `XtPopdown(XtParent(w))` in handler.c line 362. With Xaw, `w` was a button inside a dialog: `shell → dialog → button`. With Motif, `w` is the MessageBox: `shell → messagebox`. The double-parent traversal is no longer needed.
+
+### Removed Xaw Include
+
+Removed `#include <X11/Xaw/Dialog.h>` from misc.c since `dialogWidgetClass` and `XawDialogAddButton` are no longer used there.

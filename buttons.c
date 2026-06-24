@@ -637,6 +637,44 @@ MakeDirectoryBox(ManpageGlobals * man_globals, Widget parent, Widget * dir_disp,
     *dir_disp = list_w;
 }
 
+/*	Function Name: SaveOkCallback
+ *	Description: Callback for the OK button on the save dialog.
+ *                 Invokes SaveFormattedPage with "Save" parameter.
+ *	Arguments: w - the MessageBox widget
+ *                 client_data - not used
+ *                 call_data - not used
+ *	Returns: none.
+ */
+
+/*ARGSUSED*/
+static void
+SaveOkCallback(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    String params[1] = {"Save"};
+    Cardinal num_params = 1;
+
+    SaveFormattedPage(w, NULL, params, &num_params);
+}
+
+/*	Function Name: SaveCancelCallback
+ *	Description: Callback for the Cancel button on the save dialog.
+ *                 Invokes SaveFormattedPage with "Cancel" parameter.
+ *	Arguments: w - the MessageBox widget
+ *                 client_data - not used
+ *                 call_data - not used
+ *	Returns: none.
+ */
+
+/*ARGSUSED*/
+static void
+SaveCancelCallback(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    String params[1] = {"Cancel"};
+    Cardinal num_params = 1;
+
+    SaveFormattedPage(w, NULL, params, &num_params);
+}
+
 /*	Function Name: MakeSaveWidgets.
  *	Description: This functions creates two popup widgets, the please
  *                   standby widget and the would you like to save widget.
@@ -649,29 +687,55 @@ void
 MakeSaveWidgets(ManpageGlobals * man_globals, Widget parent)
 {
     Widget shell, dialog;       /* misc. widgets. */
-    Arg warg[1];
-    Cardinal n = 0;
+    Arg args[4];
+    Cardinal n;
+    XmString label_str;
 
 /* make the please stand by popup widget. */
+    n = 0;
     if (XtIsRealized(parent)) {
-        XtSetArg(warg[0], XtNtransientFor, parent);
+        XtSetArg(args[n], XtNtransientFor, parent);
         n++;
     }
     shell = XtCreatePopupShell("pleaseStandBy", transientShellWidgetClass,
-                               parent, warg, (Cardinal) n);
+                               parent, args, n);
 
-    man_globals->standby = XtCreateManagedWidget("label", labelWidgetClass,
-                                                 shell, NULL, (Cardinal) 0);
+    label_str = XmStringCreateLocalized("Please Stand By");
+    n = 0;
+    XtSetArg(args[n], XmNmessageString, label_str); n++;
+    XtSetArg(args[n], XmNdialogType, XmDIALOG_INFORMATION); n++;
+    man_globals->standby = XmCreateMessageBox(shell, "standbyDialog", args, n);
+    XmStringFree(label_str);
+    XtUnmanageChild(XmMessageBoxGetChild(man_globals->standby,
+                                         XmDIALOG_CANCEL_BUTTON));
+    XtUnmanageChild(XmMessageBoxGetChild(man_globals->standby,
+                                         XmDIALOG_HELP_BUTTON));
+    XtManageChild(man_globals->standby);
 
+/* make the would you like to save popup widget. */
+    n = 0;
+    if (XtIsRealized(parent)) {
+        XtSetArg(args[n], XtNtransientFor, parent);
+        n++;
+    }
     man_globals->save = XtCreatePopupShell("likeToSave",
                                            transientShellWidgetClass,
-                                           parent, warg, n);
+                                           parent, args, n);
 
-    dialog = XtCreateManagedWidget("dialog", dialogWidgetClass,
-                                   man_globals->save, NULL, (Cardinal) 0);
-
-    XawDialogAddButton(dialog, FILE_SAVE, NULL, NULL);
-    XawDialogAddButton(dialog, CANCEL_FILE_SAVE, NULL, NULL);
+    label_str = XmStringCreateLocalized("Would you like to save this page?");
+    n = 0;
+    XtSetArg(args[n], XmNmessageString, label_str); n++;
+    XtSetArg(args[n], XmNdialogType, XmDIALOG_QUESTION); n++;
+    XtSetArg(args[n], XmNokLabelString,
+             XmStringCreateLocalized(FILE_SAVE)); n++;
+    XtSetArg(args[n], XmNcancelLabelString,
+             XmStringCreateLocalized(CANCEL_FILE_SAVE)); n++;
+    dialog = XmCreateMessageBox(man_globals->save, "saveDialog", args, n);
+    XmStringFree(label_str);
+    XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_HELP_BUTTON));
+    XtAddCallback(dialog, XmNokCallback, SaveOkCallback, NULL);
+    XtAddCallback(dialog, XmNcancelCallback, SaveCancelCallback, NULL);
+    XtManageChild(dialog);
 
     if (XtIsRealized(parent)) {
         XtRealizeWidget(shell);

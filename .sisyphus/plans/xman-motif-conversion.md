@@ -1432,7 +1432,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `ui: convert search dialog to custom XmForm dialog`
   - Files: `search.c`
 
-- [ ] 17. Convert save/standby/warning dialogs to XmDialogShell + XmMessageBox
+- [x] 17. Convert save/standby/warning dialogs to XmDialogShell + XmMessageBox
 
   **What to do**:
   - Rewrite `MakeSaveWidgets()` in `buttons.c`:
