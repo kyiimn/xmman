@@ -1021,7 +1021,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat: integrate ScrollMotive with man page display`
   - Files: `buttons.c`, `misc.c`, `scroll_motive.c`
 
-- [ ] 11. Convert TopBox (form/label/commands) to XmForm/XmLabel/XmPushButton
+- [x] 11. Convert TopBox (form/label/commands) to XmForm/XmLabel/XmPushButton
 
   **What to do**:
   - Rewrite `MakeTopBox()` in `buttons.c`:

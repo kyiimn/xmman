@@ -146,3 +146,26 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **`ScrollMotiveSetFile()` handles all the internal work**: It frees old lines, loads new file, resets line_pointer, updates scrollbar values, and clears the window. No need to set `XtNfile` via resources.
 - **`scroll_motiveP.h` required for buttons.c**: The private header is needed to cast the widget to `ScrollMotiveWidget` and access `smw->scroll.fonts`, `font_height`, `h_width`. The public header (`scroll_motive.h`) only exposes the class pointer and API functions.
 - **Pre-existing Xaw errors in buttons.c**: The file still has many Xaw widget classes (`formWidgetClass`, `labelWidgetClass`, etc.) that need Motif conversion. These are NOT part of this task.
+
+## Task T11: MakeTopBox Motif Conversion
+
+### Changes Made
+- **MakeTopBox()** fully converted from Xaw to Motif widgets:
+  - `formWidgetClass` → `xmFormWidgetClass`
+  - `labelWidgetClass` → `xmLabelWidgetClass`
+  - `commandWidgetClass` → `xmPushButtonWidgetClass`
+  - `XtNfromVert` → `XmNtopAttachment/XmNtopWidget` (XmATTACH_WIDGET)
+  - `XtNfromHoriz` → `XmNleftAttachment/XmNleftWidget` (XmATTACH_WIDGET)
+  - All labels set via `XmStringCreateLocalized()` + `XmNlabelString` + `XmStringFree()`
+  - All push buttons have `Arm()/Disarm()` translation overrides for visual feedback
+  - Layout: topLabel spans full width, Help+Quit side-by-side below label, Manpage button full width below Help
+  - `FormUpWidgets()` call removed from MakeTopBox (XmForm attachments handle layout now)
+  - `#define TOPARGS 5` removed (no longer used)
+  - Local variables changed: `arglist[TOPARGS]` → `args[8]`, `num_args` → `n`, `command` → `help_cmd/quit_cmd/manpage_cmd`
+
+### Key Findings
+- **FormUpWidgets() and ConvertNamesToWidgets() MUST remain**: search.c still calls `FormUpWidgets()` with Xaw dialog widgets. These functions are not exclusive to MakeTopBox.
+- **Widget name constants vs labels**: HELP_BUTTON="helpButton", QUIT_BUTTON="quitButton", MANPAGE_BUTTON="manpageButton" are widget NAMES (for XtNameToWidget), not visible labels. Visible labels are "Help", "Quit", "Manual Page".
+- **XmForm attachment pattern**: Every widget needs explicit attachments. No attachment = widget collapses to zero size. Full-width widgets need both `XmNleftAttachment=XmATTACH_FORM` and `XmNrightAttachment=XmATTACH_FORM`.
+- **Quit button needs XmNrightAttachment=XmATTACH_FORM** to fill the row properly alongside Help.
+- **Compilation**: Zero errors from MakeTopBox(). All 16 remaining errors are pre-existing Xaw references in other functions.

@@ -56,67 +56,90 @@ static Widget *ConvertNamesToWidgets(Widget parent, const char **names);
  *	Returns: the top level widget
  */
 
-#define TOPARGS 5
-
 Widget top;                     /* needed in PopupWarning, misc.c */
 
 void
 MakeTopBox(void)
 {
-    Widget form, command, label;        /* widgets. */
-    Arg arglist[TOPARGS];       /* An argument list */
-    Cardinal num_args = 0;      /* The number of arguments. */
+    Widget form, label, help_cmd, quit_cmd, manpage_cmd;
+    Arg args[8];
+    Cardinal n;
+    XmString label_str;
     ManpageGlobals *man_globals;
-    static const char *full_size[] = {
-        "topLabel", MANPAGE_BUTTON, NULL
-    };
-    static const char *half_size[] = {
-        HELP_BUTTON, QUIT_BUTTON, NULL
-    };
 
 /* create the top icon. */
 
-    num_args = 0;
-    XtSetArg(arglist[num_args], XtNiconPixmap,
+    n = 0;
+    XtSetArg(args[n], XtNiconPixmap,
              XCreateBitmapFromData(XtDisplay(initial_widget),
                                    XtScreen(initial_widget)->root,
                                    (const char *) iconclosed_bits,
                                    iconclosed_width, iconclosed_height));
-    num_args++;
-    XtSetArg(arglist[num_args], XtNtitle, resources.title);
-    num_args++;
-    XtSetArg(arglist[num_args], XtNiconic, resources.iconic);
-    num_args++;
+    n++;
+    XtSetArg(args[n], XtNtitle, resources.title);
+    n++;
+    XtSetArg(args[n], XtNiconic, resources.iconic);
+    n++;
     top = XtCreatePopupShell(TOPBOXNAME, topLevelShellWidgetClass,
-                             initial_widget, arglist, num_args);
+                             initial_widget, args, n);
 
-    form = XtCreateManagedWidget("form", formWidgetClass, top,
+    form = XtCreateManagedWidget("form", xmFormWidgetClass, top,
                                  NULL, (Cardinal) 0);
 
-    label = XtCreateManagedWidget("topLabel", labelWidgetClass, form,
-                                  NULL, (Cardinal) 0);
+    /* topLabel: spans full width, attached to top of form */
+    label_str = XmStringCreateLocalized("Xman");
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
+    label = XtCreateManagedWidget("topLabel", xmLabelWidgetClass, form,
+                                  args, n);
+    XmStringFree(label_str);
 
-    num_args = 0;
-    XtSetArg(arglist[num_args], XtNfromVert, label);
-    num_args++;
-    command = XtCreateManagedWidget(HELP_BUTTON, commandWidgetClass, form,
-                                    arglist, num_args);
+    /* Help button: left side, below the label */
+    label_str = XmStringCreateLocalized("Help");
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNtopWidget, label); n++;
+    help_cmd = XtCreateManagedWidget(HELP_BUTTON, xmPushButtonWidgetClass,
+                                     form, args, n);
+    XmStringFree(label_str);
+    XtOverrideTranslations(help_cmd,
+        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
 
-    /* use same vertical as help widget. */
-    XtSetArg(arglist[num_args], XtNfromHoriz, command);
-    num_args++;
-    command = XtCreateManagedWidget(QUIT_BUTTON, commandWidgetClass, form,
-                                    arglist, num_args);
+    /* Quit button: right of Help, same row */
+    label_str = XmStringCreateLocalized("Quit");
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNleftWidget, help_cmd); n++;
+    XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNtopWidget, label); n++;
+    quit_cmd = XtCreateManagedWidget(QUIT_BUTTON, xmPushButtonWidgetClass,
+                                     form, args, n);
+    XmStringFree(label_str);
+    XtOverrideTranslations(quit_cmd,
+        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
 
-    num_args = 0;
-    XtSetArg(arglist[num_args], XtNfromVert, command);
-    num_args++;
-    command = XtCreateManagedWidget(MANPAGE_BUTTON, commandWidgetClass, form,
-                                    arglist, num_args);
+    /* Manpage button: full width, below Help/Quit row */
+    label_str = XmStringCreateLocalized("Manual Page");
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNtopWidget, help_cmd); n++;
+    manpage_cmd = XtCreateManagedWidget(MANPAGE_BUTTON, xmPushButtonWidgetClass,
+                                        form, args, n);
+    XmStringFree(label_str);
+    XtOverrideTranslations(manpage_cmd,
+        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
 
     help_widget = NULL;         /* We have not seen the help yet. */
-
-    FormUpWidgets(form, full_size, half_size);
 
     XtRealizeWidget(top);
     /* add WM_COMMAND property */
