@@ -742,7 +742,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat: implement ScrollMotive Xft text renderer`
   - Files: `scroll_motive.c`
 
-- [ ] 7. Implement ScrollMotive scrollbar integration
+- [x] 7. Implement ScrollMotive scrollbar integration
 
   **What to do**:
   - Add scrollbar creation in `_ScrollMotiveInitialize()` or `_ScrollMotiveRealize()`:

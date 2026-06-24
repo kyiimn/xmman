@@ -69,6 +69,8 @@ static Boolean _ScrollMotiveSetValues(Widget, Widget, Widget, ArgList, Cardinal 
 
 static void _ScrollMotiveDrawLines(Widget w, int from_line, int to_line);
 static void _ScrollMotiveCreateScrollbar(Widget w);
+static void VerticalScroll(Widget w, XtPointer client_data, XtPointer call_data);
+static void VerticalJump(Widget w, XtPointer client_data, XtPointer call_data);
 
 /****************************************************************
  *
@@ -193,6 +195,113 @@ _ScrollMotiveInitialize(Widget request, Widget new_w,
 
 /****************************************************************
  *
+ * VerticalScroll — XmScrollBar increment/decrement callback
+ *
+ ****************************************************************/
+
+/* ARGSUSED */
+static void
+VerticalScroll(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *) call_data;
+    ScrollMotiveWidget smw = (ScrollMotiveWidget) XtParent(w);
+    int new_line;
+    int max_line;
+
+    if (smw->scroll.top_line == NULL)
+        return;
+
+    switch (cbs->reason) {
+    case XmCR_INCREMENT:
+        new_line = smw->scroll.line_pointer + 1;
+        break;
+    case XmCR_DECREMENT:
+        new_line = smw->scroll.line_pointer - 1;
+        break;
+    case XmCR_PAGE_INCREMENT:
+        new_line = smw->scroll.line_pointer + smw->scroll.num_visible_lines;
+        break;
+    case XmCR_PAGE_DECREMENT:
+        new_line = smw->scroll.line_pointer - smw->scroll.num_visible_lines;
+        break;
+    default:
+        return;
+    }
+
+    max_line = smw->scroll.lines - smw->scroll.num_visible_lines;
+    if (max_line < 0)
+        max_line = 0;
+
+    if (new_line < 0)
+        new_line = 0;
+    else if (new_line > max_line)
+        new_line = max_line;
+
+    if (new_line == smw->scroll.line_pointer)
+        return;
+
+    smw->scroll.line_pointer = new_line;
+
+    if (smw->scroll.scrollbar != NULL) {
+        XmScrollBarSetValues(smw->scroll.scrollbar,
+                             smw->scroll.line_pointer,
+                             smw->scroll.num_visible_lines,
+                             1, smw->scroll.num_visible_lines,
+                             False);
+    }
+
+    XClearArea(XtDisplay((Widget) smw), XtWindow((Widget) smw),
+               0, 0,
+               ((Widget) smw)->core.width,
+               ((Widget) smw)->core.height,
+               False);
+    _ScrollMotiveDrawLines((Widget) smw,
+                           smw->scroll.line_pointer,
+                           smw->scroll.line_pointer +
+                           smw->scroll.num_visible_lines);
+}
+
+/****************************************************************
+ *
+ * VerticalJump — XmScrollBar drag/valueChanged callback
+ *
+ ****************************************************************/
+
+/* ARGSUSED */
+static void
+VerticalJump(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    XmScrollBarCallbackStruct *cbs = (XmScrollBarCallbackStruct *) call_data;
+    ScrollMotiveWidget smw = (ScrollMotiveWidget) XtParent(w);
+    int max_line;
+
+    if (smw->scroll.top_line == NULL)
+        return;
+
+    smw->scroll.line_pointer = cbs->value;
+
+    max_line = smw->scroll.lines - smw->scroll.num_visible_lines;
+    if (max_line < 0)
+        max_line = 0;
+
+    if (smw->scroll.line_pointer < 0)
+        smw->scroll.line_pointer = 0;
+    else if (smw->scroll.line_pointer > max_line)
+        smw->scroll.line_pointer = max_line;
+
+    XClearArea(XtDisplay((Widget) smw), XtWindow((Widget) smw),
+               0, 0,
+               ((Widget) smw)->core.width,
+               ((Widget) smw)->core.height,
+               False);
+    _ScrollMotiveDrawLines((Widget) smw,
+                           smw->scroll.line_pointer,
+                           smw->scroll.line_pointer +
+                           smw->scroll.num_visible_lines);
+}
+
+/****************************************************************
+ *
  * Realize — create Xft drawing context and back buffer
  *
  ****************************************************************/
@@ -282,19 +391,48 @@ static void
 _ScrollMotiveCreateScrollbar(Widget w)
 {
     ScrollMotiveWidget smw = (ScrollMotiveWidget) w;
-    Arg args[8];
+    Arg args[16];
     Cardinal n = 0;
+    int slider_size;
 
     if (smw->scroll.scrollbar != NULL)
         return;
 
     XtSetArg(args[n], XmNorientation, XmVERTICAL); n++;
+    XtSetArg(args[n], XmNprocessingDirection, XmMAX_ON_BOTTOM); n++;
     XtSetArg(args[n], XmNwidth, 20); n++;
+    XtSetArg(args[n], XmNminimum, 0); n++;
+    XtSetArg(args[n], XmNmaximum,
+             (smw->scroll.lines > 0) ? smw->scroll.lines : 1); n++;
+    XtSetArg(args[n], XmNincrement, 1); n++;
+    XtSetArg(args[n], XmNpageIncrement,
+             (smw->scroll.num_visible_lines > 0)
+                 ? smw->scroll.num_visible_lines : 1); n++;
+
+    slider_size = (smw->scroll.lines > 0 && smw->scroll.font_height > 0)
+        ? (int)((float)w->core.height /
+                (float)(smw->scroll.lines * smw->scroll.font_height))
+        : 1;
+    if (slider_size < 1) slider_size = 1;
+    XtSetArg(args[n], XmNsliderSize, slider_size); n++;
+    XtSetArg(args[n], XmNvalue, smw->scroll.line_pointer); n++;
 
     smw->scroll.scrollbar = XtCreateWidget(
         "scrollbar", xmScrollBarWidgetClass, w, args, n);
 
-    /* Scrollbar callbacks will be added in Task 7 */
+    XtAddCallback(smw->scroll.scrollbar,
+                  XmNincrementCallback, VerticalScroll, NULL);
+    XtAddCallback(smw->scroll.scrollbar,
+                  XmNdecrementCallback, VerticalScroll, NULL);
+    XtAddCallback(smw->scroll.scrollbar,
+                  XmNpageIncrementCallback, VerticalScroll, NULL);
+    XtAddCallback(smw->scroll.scrollbar,
+                  XmNpageDecrementCallback, VerticalScroll, NULL);
+    XtAddCallback(smw->scroll.scrollbar,
+                  XmNvalueChangedCallback, VerticalJump, NULL);
+    XtAddCallback(smw->scroll.scrollbar,
+                  XmNdragCallback, VerticalJump, NULL);
+
     XtManageChild(smw->scroll.scrollbar);
 }
 
@@ -349,6 +487,7 @@ static void
 _ScrollMotiveResize(Widget w)
 {
     ScrollMotiveWidget smw = (ScrollMotiveWidget) w;
+    Dimension scrollbar_width = 0;
 
     if (!XtIsRealized(w))
         return;
@@ -362,33 +501,36 @@ _ScrollMotiveResize(Widget w)
         w->core.width, w->core.height,
         w->core.depth);
 
-    smw->scroll.draw_width = w->core.width;
-    smw->scroll.draw_height = w->core.height;
-
     /* Recalculate number of visible lines */
     if (smw->scroll.font_height > 0) {
         smw->scroll.num_visible_lines =
             w->core.height / smw->scroll.font_height + 1;
     }
 
+    if (smw->scroll.scrollbar != NULL) {
+        scrollbar_width = smw->scroll.scrollbar->core.width +
+                          smw->scroll.scrollbar->core.border_width;
+    }
+    smw->scroll.draw_width = w->core.width - scrollbar_width;
+    smw->scroll.draw_height = w->core.height;
 
     if (smw->scroll.render_ctx.draw != NULL) {
         XftChangeDrawable(&smw->scroll.render_ctx, XtWindow(w));
     }
 
-
     if (smw->scroll.scrollbar != NULL) {
-        int slider_size = (smw->scroll.lines > 0)
+        int slider_size = (smw->scroll.lines > 0 && smw->scroll.font_height > 0)
             ? (int)((float)w->core.height /
                     (float)(smw->scroll.lines * smw->scroll.font_height))
             : 1;
         if (slider_size < 1) slider_size = 1;
-        if (slider_size > smw->scroll.lines) slider_size = smw->scroll.lines;
+        if (slider_size > smw->scroll.lines && smw->scroll.lines > 0)
+            slider_size = smw->scroll.lines;
 
         XmScrollBarSetValues(smw->scroll.scrollbar,
-                               smw->scroll.line_pointer,
-                               slider_size, 1,
-                               smw->scroll.font_height, True);
+                              smw->scroll.line_pointer,
+                              slider_size, 1,
+                              smw->scroll.num_visible_lines, True);
     }
 
     /* Trigger full redraw */
@@ -500,6 +642,7 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
     XftFont *current_font;
     int y_pos;
     int line;
+    int left_margin;
 
     if (smw->scroll.top_line == NULL || smw->scroll.fonts == NULL)
         return;
@@ -507,10 +650,14 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
     if (smw->scroll.fonts->normal == NULL)
         return;
 
-    /* Start with normal font */
     current_font = smw->scroll.fonts->normal;
 
-    /* Calculate baseline for first visible line */
+    left_margin = (int) smw->scroll.indent;
+    if (smw->scroll.scrollbar != NULL) {
+        left_margin += smw->scroll.scrollbar->core.width +
+                       smw->scroll.scrollbar->core.border_width;
+    }
+
     y_pos = XftGetFontAscent(current_font);
 
     for (line = from_line;
@@ -523,23 +670,16 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
             continue;
         }
 
-        /*
-         * Clear the line area before drawing to prevent anti-aliased
-         * ghosting when switching fonts (e.g. normal → bold).
-         * This ensures no leftover sub-pixel artifacts from the
-         * previous font's anti-aliased rendering remain visible.
-         */
         XClearArea(XtDisplay(w), XtWindow(w),
-                    smw->scroll.indent, y_pos - XftGetFontAscent(current_font),
-                    w->core.width - smw->scroll.indent,
+                    left_margin, y_pos - XftGetFontAscent(current_font),
+                    w->core.width - left_margin,
                     XftGetFontHeight(current_font),
                     False);
 
-        /* Draw line using Xft — nroff parsing will be added in Task 8 */
         XftDrawStringUtf8(smw->scroll.render_ctx.draw,
                           &smw->scroll.fg_color,
                           current_font,
-                          smw->scroll.indent, y_pos,
+                          left_margin, y_pos,
                           (const FcChar8 *) text,
                           (int) strlen(text));
 

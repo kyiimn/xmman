@@ -87,3 +87,14 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **LSP false positives**: clangd may report errors about `ft2build.h` not found — this is a clangd include path issue, not a real compilation error.
 - **Anti-aliased ghosting prevention**: Clear background with `XClearArea` before drawing each text line to prevent leftover sub-pixel artifacts from previous font renderings.
 - **Xft color allocation pattern**: pixel → XQueryColor → XRenderColor → XftColorAllocValue. This ensures correct colors on any visual/colormap.
+
+## Task T7: Scrollbar Integration
+
+### Key Findings
+- **XmScrollBar callbacks differ from Xaw**: Xaw uses `XtNscrollProc` (pixel-based) and `XtNjumpProc` (float 0-1). Xm uses `XmNincrementCallback`, `XmNdecrementCallback`, `XmNpageIncrementCallback`, `XmNpageDecrementCallback` (all via `XmScrollBarCallbackStruct`), plus `XmNvalueChangedCallback` and `XmNdragCallback` for thumb positioning.
+- **XmScrollBarCallbackStruct fields**: `reason`, `value`, `pixel_increment`, `slider_size`, `increment`, `page_increment`. For increment/decrement callbacks, use `cbs->reason` to distinguish direction. For drag/valueChanged, use `cbs->value` as the new line_pointer.
+- **Callback widget is the scrollbar, not the parent**: VerticalScroll/VerticalJump receive the XmScrollBar widget as `w`, so `XtParent(w)` gets the ScrollMotive parent. This matches Xaw's pattern where the scrollbar widget is the callback's first argument.
+- **XmScrollBarSetValues(widget, value, slider_size, increment, page_increment, notify)**: The `notify` parameter (True/False) controls whether callbacks fire. Use False in VerticalScroll to avoid recursive callback loops.
+- **scrollbar_width offset**: `scrollbar->core.width + scrollbar->core.border_width` gives the total space consumed by the scrollbar. This is added to `indent` in _ScrollMotiveDrawLines to offset text left margin.
+- **draw_width accounts for scrollbar**: In _ScrollMotiveResize, `draw_width = core.width - scrollbar_width` reserves space for the scrollbar.
+- **No Xaw scrollbarWidgetClass references**: Verified `nm scroll_motive.o | grep scrollbarWidgetClass` returns 0 matches — all scrollbar functionality uses XmScrollBar.
