@@ -1362,7 +1362,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `ui: convert directory list to XmScrolledWindow + XmList`
   - Files: `buttons.c`, `handler.c`
 
-- [ ] 16. Convert search dialog (XawDialog) to custom XmForm dialog
+- [x] 16. Convert search dialog (XawDialog) to custom XmForm dialog
 
   **What to do**:
   - Rewrite `MakeSearchWidget()` in `search.c`:

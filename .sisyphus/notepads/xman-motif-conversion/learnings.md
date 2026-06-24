@@ -224,3 +224,30 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **ScrolledWindow with XmAUTOMATIC**: No need to create a separate scrollbar — XmScrolledWindow handles it automatically when `XmNscrollingPolicy` is set to `XmAUTOMATIC`.
 - **No need for `XmNfont` on XmList**: XmList uses XmString which carries its own font info.
 - **Pre-existing errors unchanged**: All compilation errors in buttons.c, handler.c, and search.c are pre-existing Xaw references in other functions (MakeSaveWidgets, FormUpWidgets, MakeSearchWidget, SearchString, ToggleBothShownState).
+
+## Task T14: Search Dialog Conversion (Xaw → Motif)
+
+### Changes Made
+
+- **search.c `MakeSearchWidget()`**: Complete rewrite from Xaw to Motif:
+  - `dialogWidgetClass` → `xmFormWidgetClass` (form container)
+  - Xaw dialog's built-in text field → `xmTextFieldWidgetClass` (explicit "value" widget)
+  - `XawDialogAddButton(dialog, ...)` × 3 → `xmPushButtonWidgetClass` with `XmNlabelString` + `XmStringCreateLocalized()` + `XmStringFree()`
+  - `XtSetKeyboardFocus(dialog, text)` removed (not needed with XmTextField)
+  - All 4 widgets have explicit XmForm attachments (`XmNleftAttachment`, `XmNrightAttachment`, `XmNtopAttachment`, `XmNtopWidget`)
+  - All 3 buttons have `Arm()/Disarm()` translation overrides
+  - `text_widget` stored in `man_globals->text_widget` for `SearchString()` access
+  - `FormUpWidgets()` call removed (XmForm handles layout)
+  - `XtNtransientFor` arg on transientShell removed (not needed; transientShellWidgetClass works without it)
+
+- **search.c `SearchString()`**: `XawDialogGetValueString(dialog)` → `XmTextFieldGetString(man_globals->text_widget)`. Uses stored `text_widget` instead of `XtNameToWidget`.
+
+- **search.c `DoSearch()` clear_search_string section**: `XtNameToWidget(search_widget, DIALOG)` + `XtSetArg(XtNvalue, "")` + `XtSetValues()` → `XmTextFieldSetString(man_globals->text_widget, "")`
+
+### Key Findings
+- **`text_widget` field already existed** in `ManpageGlobals` struct (man.h line 164) — no struct change needed
+- **`XmTextFieldGetString()` returns malloc'd string**: Caller must `XtFree()` the result. The existing `DoSearch()` code doesn't free it, which matches the original `XawDialogGetValueString()` behavior (also malloc'd). This is a potential leak in both old and new code, but out of scope.
+- **`handler.c Search()` action unchanged**: `XtPopdown(XtParent(XtParent(w)))` still works because widget hierarchy is pushbutton → form → shell (same 2-level depth as Xaw's pushbutton → dialog → shell)
+- **No changes to handler.c, buttons.c, or misc.c**: All Xaw references in those files are in other functions (MakeSaveWidgets, FormUpWidgets, PopWarning) and outside scope
+- **LSP clangd error about ft2build.h**: Pre-existing false positive, gcc compiles clean
+- **XmNeditMode = XmSINGLE_LINE_EDIT**: Required for XmTextField to behave as single-line input (matches Xaw dialog's text widget behavior)

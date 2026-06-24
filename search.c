@@ -49,59 +49,69 @@ static int BEntrySearch(char *string, char **first, int number);
 void
 MakeSearchWidget(ManpageGlobals * man_globals, Widget parent)
 {
-    Widget dialog, command, text, cancel;
-    Arg arglist[2];
-    Cardinal num_args = 0;
+    Widget form, text_field, manual_btn, apropos_btn, cancel_btn;
+    XmString label_str;
+    Arg args[8];
+    Cardinal n;
 
-    XtSetArg(arglist[0], XtNtransientFor, parent);
+    /* Create search shell */
     man_globals->search_widget = XtCreatePopupShell(SEARCHNAME,
                                                     transientShellWidgetClass,
-                                                    parent, arglist, 1);
+                                                    parent, NULL, (Cardinal) 0);
 
+    /* Create form container */
+    form = XtCreateManagedWidget(DIALOG, xmFormWidgetClass,
+                                 man_globals->search_widget, NULL, (Cardinal) 0);
+
+    /* Create text field */
+    n = 0;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNrightAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNeditMode, XmSINGLE_LINE_EDIT); n++;
     if (resources.clear_search_string) {
-        XtSetArg(arglist[0], XtNvalue, "");
-        num_args++;
+        XtSetArg(args[n], XmNvalue, ""); n++;
     }
+    text_field = XtCreateManagedWidget("value", xmTextFieldWidgetClass, form, args, n);
+    man_globals->text_widget = text_field;
 
-    dialog = XtCreateManagedWidget(DIALOG, dialogWidgetClass,
-                                   man_globals->search_widget,
-                                   arglist, num_args);
+    /* Create Manual Search button */
+    label_str = XmStringCreateLocalized(MANUALSEARCH);
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNtopWidget, text_field); n++;
+    manual_btn = XtCreateManagedWidget(MANUALSEARCH, xmPushButtonWidgetClass, form, args, n);
+    XmStringFree(label_str);
+    XtOverrideTranslations(manual_btn,
+        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
 
-    if ((text = XtNameToWidget(dialog, "value")) == (Widget) NULL)
-        PopupWarning(NULL, "Could not find text widget in MakeSearchWidget.");
-    else
-        XtSetKeyboardFocus(dialog, text);
+    /* Create Apropos Search button */
+    label_str = XmStringCreateLocalized(APROPOSSEARCH);
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNleftWidget, manual_btn); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNtopWidget, text_field); n++;
+    apropos_btn = XtCreateManagedWidget(APROPOSSEARCH, xmPushButtonWidgetClass, form, args, n);
+    XmStringFree(label_str);
+    XtOverrideTranslations(apropos_btn,
+        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
 
-    XawDialogAddButton(dialog, MANUALSEARCH, NULL, NULL);
-    XawDialogAddButton(dialog, APROPOSSEARCH, NULL, NULL);
-    XawDialogAddButton(dialog, CANCEL, NULL, NULL);
-
-/*
- * This is a bit gross, but it get the cancel button underneath the
- * others, and forms them up to the right size..
- */
-
-    if (((command = XtNameToWidget(dialog, MANUALSEARCH)) == (Widget) NULL) ||
-        ((cancel = XtNameToWidget(dialog, CANCEL)) == (Widget) NULL))
-        PopupWarning(NULL,
-                     "Could not find manual search widget in MakeSearchWidget.");
-    else {
-        static const char *half_size[] = {
-            MANUALSEARCH, APROPOSSEARCH, NULL
-        };
-        static const char *full_size[] = {
-            "label", "value", CANCEL, NULL
-        };
-
-        num_args = 0;
-        XtSetArg(arglist[num_args], XtNfromVert, command);
-        num_args++;
-        XtSetArg(arglist[num_args], XtNfromHoriz, NULL);
-        num_args++;
-        XtSetValues(cancel, arglist, num_args);
-        FormUpWidgets(dialog, full_size, half_size);
-    }
-
+    /* Create Cancel button */
+    label_str = XmStringCreateLocalized(CANCEL);
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetArg(args[n], XmNleftAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNleftWidget, apropos_btn); n++;
+    XtSetArg(args[n], XmNtopAttachment, XmATTACH_WIDGET); n++;
+    XtSetArg(args[n], XmNtopWidget, text_field); n++;
+    cancel_btn = XtCreateManagedWidget(CANCEL, xmPushButtonWidgetClass, form, args, n);
+    XmStringFree(label_str);
+    XtOverrideTranslations(cancel_btn,
+        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
 }
 
 /*      Function Name: SearchString
@@ -113,11 +123,8 @@ MakeSearchWidget(ManpageGlobals * man_globals, Widget parent)
 static char *
 SearchString(ManpageGlobals * man_globals)
 {
-    Widget dialog;
-
-    dialog = XtNameToWidget(man_globals->search_widget, DIALOG);
-    if (dialog != NULL)
-        return (XawDialogGetValueString(dialog));
+    if (man_globals->text_widget != NULL)
+        return (XmTextFieldGetString(man_globals->text_widget));
 
     PopupWarning(man_globals,
                  "Could not get the search string, no search will be performed.");
@@ -281,15 +288,10 @@ DoSearch(ManpageGlobals * man_globals, int type)
     }
 
     if (resources.clear_search_string) {
-        Arg arglist[1];
-        Widget dialog;
-
-        dialog = XtNameToWidget(man_globals->search_widget, DIALOG);
-        if (dialog == NULL)
+        if (man_globals->text_widget == NULL)
             PopupWarning(man_globals, "Could not clear the search string.");
-
-        XtSetArg(arglist[0], XtNvalue, "");
-        XtSetValues(dialog, arglist, (Cardinal) 1);
+        else
+            XmTextFieldSetString(man_globals->text_widget, "");
     }
 
     return (file);
