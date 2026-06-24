@@ -94,12 +94,14 @@ static Boolean _ScrollMotiveSetValues(Widget, Widget, Widget, ArgList, Cardinal 
 static void _ScrollMotiveDrawLines(Widget w, int from_line, int to_line);
 static void _ScrollMotiveCreateScrollbar(Widget w);
 static int _ScrollMotiveParseLine(const char *line, TextSegment *segments,
-                                   int max_segments, int left_margin,
-                                   int h_width);
+                                    int max_segments, int left_margin,
+                                    int h_width);
 static void _ScrollMotiveRenderSegment(Widget w, TextSegment *seg,
-                                        XftRenderingContext *ctx, int y);
+                                         XftRenderingContext *ctx, int y);
 static void VerticalScroll(Widget w, XtPointer client_data, XtPointer call_data);
 static void VerticalJump(Widget w, XtPointer client_data, XtPointer call_data);
+static void _ScrollMotiveLoadFile(Widget w, FILE *file);
+static void _ScrollMotiveFreeLines(Widget w);
 
 /****************************************************************
  *
@@ -402,6 +404,11 @@ _ScrollMotiveRealize(Widget w, XtValueMask *mask,
     if (smw->scroll.fonts != NULL && smw->scroll.fonts->normal != NULL) {
         smw->scroll.font_height = XftGetFontHeight(smw->scroll.fonts->normal);
         smw->scroll.h_width = XftGetFontWidth(smw->scroll.fonts->normal);
+    }
+
+    if (smw->scroll.font_height > 0) {
+        smw->scroll.num_visible_lines =
+            w->core.height / smw->scroll.font_height + 1;
     }
 
     smw->scroll.back_pixmap = XCreatePixmap(
@@ -913,6 +920,139 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
 
 /****************************************************************
  *
+ * _ScrollMotiveLoadFile — read file and build line pointer array
+ *
+ ****************************************************************/
+
+#define ADD_MORE_MEM 100        /* increment for line pointer reallocs */
+#define CHAR_PER_LINE 40        /* initial guess for lines in file */
+
+static void
+_ScrollMotiveLoadFile(Widget w, FILE *file)
+{
+    ScrollMotiveWidget smw = (ScrollMotiveWidget) w;
+    char *page;
+    char **line_pointer, **top_line;
+    int nlines;
+    struct stat fileinfo;
+
+    /* Free any existing content first */
+    if (smw->scroll.top_line != NULL) {
+        _ScrollMotiveFreeLines(w);
+    }
+
+    smw->scroll.top_line = NULL;
+    smw->scroll.lines = 0;
+    smw->scroll.line_pointer = 0;
+
+    if (file == NULL)
+        return;
+
+    /*
+     * Get file size and allocate a chunk of memory for the file
+     * to be copied into.
+     */
+    if (fstat(fileno(file), &fileinfo) != 0)
+        return;
+
+    if (fileinfo.st_size == 0)
+        return;
+
+    /* The XtMalloc below is limited to a size of int by the libXt API. */
+    if (fileinfo.st_size >= INT_MAX)
+        return;
+
+    /* Initial guess for number of lines */
+    if ((nlines = fileinfo.st_size / CHAR_PER_LINE) == 0)
+        nlines = ADD_MORE_MEM;
+
+    page = XtMalloc(fileinfo.st_size + 1);
+    top_line = line_pointer = (char **) XtMalloc(nlines * sizeof(char *));
+
+    /*
+     * Copy the file into memory.
+     */
+    fseek(file, 0L, SEEK_SET);
+    if (fread(page, sizeof(char), fileinfo.st_size, file) == 0) {
+        XtFree(page);
+        XtFree((char *) top_line);
+        return;
+    }
+
+    /* Put NULL at end of buffer */
+    *(page + fileinfo.st_size) = '\0';
+
+    /*
+     * Go through the file setting a line pointer to the character
+     * after each newline.  If we run out of line pointer space then
+     * realloc with space for more lines.
+     */
+    *line_pointer++ = page;     /* first line points to first char */
+    while (*page != '\0') {
+        if (*page == '\n') {
+            *page = '\0';       /* terminate previous line */
+            *line_pointer++ = page + 1;
+
+            if (line_pointer >= top_line + nlines) {
+                top_line = (char **) XtRealloc((char *) top_line,
+                                               (nlines + ADD_MORE_MEM) * sizeof(char *));
+                line_pointer = top_line + nlines;
+                nlines += ADD_MORE_MEM;
+            }
+        }
+        page++;
+    }
+
+    /*
+     * Realloc the line pointer space to take only the minimum
+     * amount of memory.
+     */
+    smw->scroll.lines = nlines = line_pointer - top_line;
+    if (nlines > 0) {
+        top_line = (char **) XtRealloc((char *) top_line,
+                                       nlines * sizeof(char *));
+        smw->scroll.top_line = top_line;
+    } else {
+        XtFree((char *) top_line);
+        smw->scroll.top_line = NULL;
+    }
+
+    smw->scroll.line_pointer = 0;
+}
+
+#undef ADD_MORE_MEM
+#undef CHAR_PER_LINE
+
+/****************************************************************
+ *
+ * _ScrollMotiveFreeLines — free line pointer array and page buffer
+ *
+ ****************************************************************/
+
+static void
+_ScrollMotiveFreeLines(Widget w)
+{
+    ScrollMotiveWidget smw = (ScrollMotiveWidget) w;
+
+    if (smw->scroll.top_line == NULL) {
+        smw->scroll.lines = 0;
+        smw->scroll.line_pointer = 0;
+        return;
+    }
+
+    /* Free the page buffer (first pointer points to start of buffer) */
+    XtFree(*(smw->scroll.top_line));
+
+    /* Free the line pointer array itself */
+    XtFree((char *) smw->scroll.top_line);
+
+    smw->scroll.top_line = NULL;
+    smw->scroll.lines = 0;
+    smw->scroll.line_pointer = 0;
+}
+
+/****************************************************************
+ *
  * Public API
  *
  ****************************************************************/
@@ -921,9 +1061,25 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
 void
 ScrollMotiveSetFile(Widget w, FILE *file)
 {
-    /* Stub — file loading will be implemented in Task 9 */
     ScrollMotiveWidget smw = (ScrollMotiveWidget) w;
+
+    _ScrollMotiveFreeLines(w);
+
     smw->scroll.file = file;
+    _ScrollMotiveLoadFile(w, file);
+
+    smw->scroll.line_pointer = 0;
+
+    if (smw->scroll.scrollbar != NULL && smw->scroll.num_visible_lines > 0) {
+        XmScrollBarSetValues(smw->scroll.scrollbar, 0,
+                             smw->scroll.num_visible_lines, 1, 1,
+                             XmMAX_ON_BOTTOM);
+    }
+
+    if (XtIsRealized(w)) {
+        XClearArea(XtDisplay(w), XtWindow(w), 0, 0,
+                   smw->core.width, smw->core.height, False);
+    }
 }
 
 /* ARGSUSED */

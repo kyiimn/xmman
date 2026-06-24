@@ -880,7 +880,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat: implement ScrollMotive nroff parser (bold/italic/symbol)`
   - Files: `scroll_motive.c`
 
-- [ ] 9. Implement ScrollMotive file loading and line management
+- [x] 9. Implement ScrollMotive file loading and line management
 
   **What to do**:
   - Port file loading logic from `ScrollByL.c` to `scroll_motive.c`

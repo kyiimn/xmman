@@ -118,3 +118,14 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - The original `DumpText()` returns the x position for chaining. Our `_ScrollMotiveRenderSegment()` doesn't need this because segments carry their own `x_position`.
 - `TextSegment.text[BUFSIZ]` makes the struct ~8KB per segment — 256 segments would be ~2MB on stack. This is fine for a single-line parse but the `MAX_SEGMENTS` limit prevents stack overflow.
 - When `bufp > buf` check fails in FLUSH_BUF (empty buffer), the segment is simply skipped — no empty segments are emitted.
+
+## Task T9: File Loading and Line Management
+
+### Key Findings
+- **_ScrollMotiveLoadFile pattern**: Direct port of ScrollByL.c's `LoadFile()` — uses `fstat()` + `fread()` to load entire file into a single XtMalloc'd buffer, then builds a `char **top_line` array pointing into the buffer. Each `\n` is replaced with `\0` to terminate lines.
+- **Single-buffer approach**: All line pointers point into one contiguous `page` buffer. `_ScrollMotiveFreeLines` frees `*top_line` (the buffer) then `top_line` (the pointer array) — exactly matching the original's `XtFree(*(top_line))` + `XtFree((char *) top_line)` pattern.
+- **`nlines` calculation**: `line_pointer - top_line` gives the final line count after parsing, same as original. The realloc to shrink the array is also preserved.
+- **XmScrollBarSetValues in SetFile**: Uses `XmMAX_ON_BOTTOM` as the final parameter (processing direction), with initial value 0 and slider_size = num_visible_lines.
+- **Realize adds num_visible_lines init**: After font metrics are set, `num_visible_lines = core.height / font_height + 1` is computed before scrollbar creation, matching the original's `Layout()` pattern.
+- **`INT_MAX` guard**: Preserved from original ScrollByL.c — files larger than INT_MAX bytes are rejected since XtMalloc takes an int.
+- **`#define ADD_MORE_MEM` / `CHAR_PER_LINE`**: These are `#undef`'d after `_ScrollMotiveLoadFile` to avoid polluting the namespace, matching the original's scoping convention.
