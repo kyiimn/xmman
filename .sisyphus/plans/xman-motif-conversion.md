@@ -950,7 +950,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat: implement ScrollMotive file loading and line management`
   - Files: `scroll_motive.c`
 
-- [ ] 10. Integrate ScrollMotive with man page display (OpenFile, expose)
+- [x] 10. Integrate ScrollMotive with man page display (OpenFile, expose)
 
   **What to do**:
   - Wire `ScrollMotiveSetFile()` into the man page display pipeline

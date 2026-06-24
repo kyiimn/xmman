@@ -36,6 +36,7 @@ from the X Consortium.
 
 #include "globals.h"
 #include "vendor.h"
+#include "scroll_motiveP.h"
 
 /* The files with the icon bits in them. */
 
@@ -305,8 +306,17 @@ CreateManpageWidget(ManpageGlobals * man_globals,
 
 /* Create Manpage */
 
-    mpw->manpage = XtCreateWidget(MANUALPAGE, scrollByLineWidgetClass,
-                                  pane, NULL, (Cardinal) 0);
+    mpw->manpage = XtCreateWidget(MANUALPAGE, scrollMotiveWidgetClass,
+                                   pane, NULL, (Cardinal) 0);
+
+/* Load Xft fonts for man page rendering */
+    {
+        ScrollMotiveWidget smw = (ScrollMotiveWidget) mpw->manpage;
+        smw->scroll.fonts = XmanLoadManpageFonts(XtDisplay(mpw->manpage),
+                                                  XScreenNumberOfScreen(XtScreen(mpw->manpage)));
+        smw->scroll.font_height = XftGetFontHeight(smw->scroll.fonts->normal);
+        smw->scroll.h_width = XftGetFontWidth(smw->scroll.fonts->normal);
+    }
 
 }
 

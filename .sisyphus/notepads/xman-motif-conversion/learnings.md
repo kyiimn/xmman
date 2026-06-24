@@ -129,3 +129,20 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **Realize adds num_visible_lines init**: After font metrics are set, `num_visible_lines = core.height / font_height + 1` is computed before scrollbar creation, matching the original's `Layout()` pattern.
 - **`INT_MAX` guard**: Preserved from original ScrollByL.c — files larger than INT_MAX bytes are rejected since XtMalloc takes an int.
 - **`#define ADD_MORE_MEM` / `CHAR_PER_LINE`**: These are `#undef`'d after `_ScrollMotiveLoadFile` to avoid polluting the namespace, matching the original's scoping convention.
+
+## Task T10: ScrollMotive Integration (buttons.c, misc.c)
+
+### Changes Made
+- **buttons.c `CreateManpageWidget()`**: Replaced `scrollByLineWidgetClass` with `scrollMotiveWidgetClass` in the `XtCreateWidget` call for the manpage widget
+- **buttons.c**: Added `#include "scroll_motiveP.h"` for `ScrollMotiveWidget` cast and `scroll` part accessor
+- **buttons.c**: Added Xft font loading block after widget creation — calls `XmanLoadManpageFonts()` to get the `XmanFontSet*`, then sets `smw->scroll.fonts`, `font_height`, and `h_width`
+- **misc.c `OpenFile()`**: Replaced `XtSetValues(XtNfile)` with direct `ScrollMotiveSetFile()` call, removing the ArgList/num_args pattern entirely
+- **handler.c**: No changes needed — no ScrollByLine or XtNfile references
+- **help.c**: No changes needed — `OpenHelpfile()` calls `OpenFile()` which is in misc.c (already changed)
+
+### Key Findings
+- **Font loading must happen after widget creation but before realize**: `CreateManpageWidget()` creates the widget, then `StartManpage()` calls `XtRealizeWidget()`. Font loading in between means `_ScrollMotiveRealize()` finds `fonts != NULL` and computes metrics.
+- **`XScreenNumberOfScreen(XtScreen(w))`**: Returns the screen number (int) for `XmanLoadManpageFonts(Display*, int)`. This is the correct way to get the screen number from a widget.
+- **`ScrollMotiveSetFile()` handles all the internal work**: It frees old lines, loads new file, resets line_pointer, updates scrollbar values, and clears the window. No need to set `XtNfile` via resources.
+- **`scroll_motiveP.h` required for buttons.c**: The private header is needed to cast the widget to `ScrollMotiveWidget` and access `smw->scroll.fonts`, `font_height`, `h_width`. The public header (`scroll_motive.h`) only exposes the class pointer and API functions.
+- **Pre-existing Xaw errors in buttons.c**: The file still has many Xaw widget classes (`formWidgetClass`, `labelWidgetClass`, etc.) that need Motif conversion. These are NOT part of this task.
