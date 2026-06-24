@@ -36,6 +36,9 @@ typedef struct {
 
 typedef struct _ScrollMotiveClassRec {
     CoreClassPart            core_class;
+    CompositeClassPart       composite_class;
+    ConstraintClassPart      constraint_class;
+    XmManagerClassPart       manager_class;
     XmDrawingAreaClassPart   drawing_area_class;
     ScrollMotiveClassPart    scroll_motive_class;
 } ScrollMotiveClassRec;
@@ -72,6 +75,9 @@ typedef struct _ScrollMotivePart {
 
 typedef struct _ScrollMotiveRec {
     CorePart              core;
+    CompositePart         composite;
+    ConstraintPart        constraint;
+    XmManagerPart         manager;
     XmDrawingAreaPart     drawing_area;
     ScrollMotivePart      scroll;
 } ScrollMotiveRec;
