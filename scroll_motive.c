@@ -1092,8 +1092,8 @@ ScrollMotiveSetFile(Widget w, FILE *file)
 
     if (smw->scroll.scrollbar != NULL && smw->scroll.num_visible_lines > 0) {
         XmScrollBarSetValues(smw->scroll.scrollbar, 0,
-                              smw->scroll.num_visible_lines, 1, 1,
-                              False);
+                              smw->scroll.num_visible_lines, 1,
+                              smw->scroll.num_visible_lines, False);
     }
 
     if (XtIsRealized(w)) {
