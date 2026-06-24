@@ -25,7 +25,7 @@ bin_PROGRAMS = xman
 helpdir=@HELPDIR@
 dist_help_DATA = xman.help
 
-AM_CFLAGS = $(CWARNFLAGS) $(XMAN_CFLAGS) -D_CONST_X_STRING \
+AM_CFLAGS = $(CWARNFLAGS) $(XMAN_CFLAGS) $(XM_CFLAGS) $(XFT_CFLAGS) -D_CONST_X_STRING \
 	-D_BSD_SOURCE -DHELPFILE=\"$(helpdir)/xman.help\"
 xman_LDADD = $(XMAN_LIBS) $(LIBOBJS)
 
@@ -43,13 +43,17 @@ xman_SOURCES =	\
         man.c \
         man.h \
         misc.c \
-        ScrollByL.c \
-        ScrollByL.h \
-        ScrollByLP.h \
+        scroll_motive.c \
+        scroll_motive.h \
+        scroll_motiveP.h \
         search.c \
         tkfuncs.c \
         vendor.c \
-        vendor.h
+        vendor.h \
+        xft_utils.c \
+        xft_utils.h \
+        xman_fonts.c \
+        xman_fonts.h
 
 # App default files
 

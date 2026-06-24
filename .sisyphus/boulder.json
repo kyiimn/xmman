@@ -1,0 +1,24 @@
+{
+  "active_plan": "/home/kyiimn/src/xman/.sisyphus/plans/xman-motif-conversion.md",
+  "started_at": "2026-06-24T05:41:19.563Z",
+  "session_ids": [
+    "ses_107da51ceffe0sVlazHsGT4aDi",
+    "ses_107d9a318ffeWnDmgtQHtOSXOo",
+    "ses_107d9af1cffex2cRxtu27pBgVZ",
+    "ses_107d8f372ffetfshWyPl7UjXBB",
+    "ses_107d9323fffeB1gzQupPFXrugv"
+  ],
+  "plan_name": "xman-motif-conversion",
+  "agent": "atlas",
+  "task_sessions": {
+    "todo:1": {
+      "task_key": "todo:1",
+      "task_label": "1",
+      "task_title": "Update build system for Motif + Xft",
+      "session_id": "ses_107d9323fffeB1gzQupPFXrugv",
+      "agent": "Sisyphus-Junior",
+      "category": "quick",
+      "updated_at": "2026-06-24T05:45:35.196Z"
+    }
+  }
+}

@@ -38,7 +38,10 @@ from the X Consortium.
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 
-#include <X11/Xaw/Cardinals.h>
+/* ZERO and ONE macros — formerly from <X11/Xaw/Cardinals.h> */
+
+#define ZERO 0
+#define ONE  1
 
 /* Std system and C header files */
 
@@ -52,23 +55,31 @@ from the X Consortium.
 
 #include <X11/Xatom.h>
 
-/* Widget header files. */
+/* Motif widget header files. */
 
-#include <X11/Xaw/AsciiText.h>
-#include <X11/Xaw/SmeBSB.h>
-#include <X11/Xaw/Box.h>
-#include <X11/Xaw/Command.h>
-#include <X11/Xaw/Dialog.h>
-#include <X11/Xaw/Label.h>
-#include <X11/Xaw/List.h>
-#include <X11/Xaw/MenuButton.h>
-#include <X11/Xaw/SimpleMenu.h>
-#include <X11/Xaw/Paned.h>
-#include <X11/Xaw/Viewport.h>
+#include <Xm/Xm.h>
+#include <Xm/Form.h>
+#include <Xm/Frame.h>
+#include <Xm/Label.h>
+#include <Xm/List.h>
+#include <Xm/PanedW.h>
+#include <Xm/PushB.h>
+#include <Xm/RowColumn.h>
+#include <Xm/CascadeB.h>
+#include <Xm/ScrollBar.h>
+#include <Xm/ScrolledW.h>
+#include <Xm/SelectioB.h>
+#include <Xm/TextF.h>
+#include <Xm/DialogS.h>
+#include <Xm/MessageB.h>
+
+/* Xft header files. */
+
+#include <X11/Xft/Xft.h>
 
 /* program specific header files. */
 
-#include "ScrollByL.h"
+#include "scroll_motive.h"
 
 #include "defs.h"
 
@@ -85,7 +96,9 @@ from the X Consortium.
  */
 
 typedef struct _XmanFonts {
-    XFontStruct *directory;     /* The font for the directory.  */
+    XFontStruct *directory;         /* DEPRECATED: The font for the directory.  */
+    XftFontSet *manpage_fonts;      /* Xft font set for manpage rendering. */
+    XftFont *directory_font;        /* Xft font for directory entries. */
 } XmanFonts;
 
 typedef struct _XmanCursors {

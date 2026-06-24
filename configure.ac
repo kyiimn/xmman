@@ -86,7 +86,36 @@ if test x$LOCALMANPATH != x; then
 fi
 
 # Obtain compiler/linker options from dependencies
-PKG_CHECK_MODULES(XMAN, [xproto >= 7.0.17 xaw7 xt])
+# Motif/Xm dependency - try 'xm' first, then 'motif', then 'openmotif'
+PKG_CHECK_MODULES([XM], [xm], [have_xm_pkgconfig=yes],
+  [PKG_CHECK_MODULES([XM], [motif], [have_xm_pkgconfig=yes],
+    [PKG_CHECK_MODULES([XM], [openmotif], [have_xm_pkgconfig=yes],
+      [have_xm_pkgconfig=no])])])
+
+if test "x$have_xm_pkgconfig" = "xno"; then
+  AC_CHECK_LIB([Xm], [XmCreateForm],
+    [XM_LIBS="-lXm -lXt -lX11"
+     XM_CFLAGS=""],
+    [AC_MSG_ERROR([No Motif/Xm library found])])
+  AC_CHECK_HEADERS([Xm/Xm.h],,
+    [AC_MSG_ERROR([No Xm/Xm.h header found])])
+fi
+
+AC_SUBST(XM_CFLAGS)
+AC_SUBST(XM_LIBS)
+
+# Xft and fontconfig for antialiased font rendering
+PKG_CHECK_MODULES([XFT], [xft fontconfig])
+
+AC_SUBST(XFT_CFLAGS)
+AC_SUBST(XFT_LIBS)
+
+# Core X dependencies
+PKG_CHECK_MODULES(XMAN, [xproto >= 7.0.17 xt])
+
+# Merge Motif and Xft flags into XMAN variables for build convenience
+XMAN_CFLAGS="$XMAN_CFLAGS $XM_CFLAGS $XFT_CFLAGS"
+XMAN_LIBS="$XMAN_LIBS $XM_LIBS $XFT_LIBS"
 
 AC_ARG_WITH(manconfig,
         AS_HELP_STRING([--with-manconfig=<filename>],
