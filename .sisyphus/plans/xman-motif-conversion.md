@@ -807,7 +807,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat: implement ScrollMotive scrollbar integration`
   - Files: `scroll_motive.c`
 
-- [ ] 8. Implement ScrollMotive nroff parser (bold/italic/symbol)
+- [x] 8. Implement ScrollMotive nroff parser (bold/italic/symbol)
 
   **What to do**:
   - Port nroff formatting parser from `ScrollByL.c` `PrintText()`/`DumpText()` to `scroll_motive.c`

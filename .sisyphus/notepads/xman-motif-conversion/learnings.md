@@ -98,3 +98,23 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **scrollbar_width offset**: `scrollbar->core.width + scrollbar->core.border_width` gives the total space consumed by the scrollbar. This is added to `indent` in _ScrollMotiveDrawLines to offset text left margin.
 - **draw_width accounts for scrollbar**: In _ScrollMotiveResize, `draw_width = core.width - scrollbar_width` reserves space for the scrollbar.
 - **No Xaw scrollbarWidgetClass references**: Verified `nm scroll_motive.o | grep scrollbarWidgetClass` returns 0 matches — all scrollbar functionality uses XmScrollBar.
+
+## T8: Nroff Formatting Parser (scroll_motive.c)
+
+### Key Design Decisions
+- **TextSegment stores text inline** (`char text[BUFSIZ]`) rather than pointing into the raw line buffer. This is necessary because nroff formatting strips backspace sequences — the clean text has no direct pointer relationship to the original line.
+- **FLUSH_BUF macro defined inside function body** since it references local variables (`bufp`, `buf`, `seg_count`, `h_col`, `x_pos`). `#undef` at function end to prevent scope pollution.
+- **WHICH macro replaced with inline ternary** — the original `WHICH(italic, bold)` macro used commas inside ternary, which breaks when passed as a macro argument to FLUSH_BUF. Pre-compute the SegmentType into a local variable instead.
+- **Font metrics cached in Realize** — `font_height` and `h_width` set from `XftGetFontHeight/Width(fonts->normal)` during `_ScrollMotiveRealize()` so they're available for the parser's column calculations.
+
+### Nroff Format Parsing Rules (ported from ScrollByL.c)
+- **Bold**: `c\bc` (character + backspace + same character) — overstrike pattern
+- **Italic**: `_\bc` (underscore + backspace + character)
+- **Symbol/bullet**: `o\b+` or `+\bo` — renders as Unicode middle dot (char 183)
+- **Tabs**: expanded to next 8-column boundary using `h_col + 8 - (h_col % 8)`
+- **Multi-overstrike bold**: `c\bc\bc\bc...` — the while loop skips all repeated backspace pairs
+
+### Pitfalls
+- The original `DumpText()` returns the x position for chaining. Our `_ScrollMotiveRenderSegment()` doesn't need this because segments carry their own `x_position`.
+- `TextSegment.text[BUFSIZ]` makes the struct ~8KB per segment — 256 segments would be ~2MB on stack. This is fine for a single-line parse but the `MAX_SEGMENTS` limit prevents stack overflow.
+- When `bufp > buf` check fails in FLUSH_BUF (empty buffer), the segment is simply skipped — no empty segments are emitted.

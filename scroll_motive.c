@@ -39,6 +39,30 @@
 
 /****************************************************************
  *
+ * Nroff formatting types and text segment structure
+ *
+ ****************************************************************/
+
+#define BACKSPACE 010   /* Same as original ScrollByL.c */
+
+typedef enum {
+    SEGMENT_NORMAL,
+    SEGMENT_BOLD,
+    SEGMENT_ITALIC,
+    SEGMENT_SYMBOL
+} SegmentType;
+
+typedef struct {
+    SegmentType type;
+    char text[BUFSIZ];
+    int len;
+    int x_position;
+} TextSegment;
+
+#define MAX_SEGMENTS 256   /* Max segments per line */
+
+/****************************************************************
+ *
  * Resource offsets
  *
  ****************************************************************/
@@ -69,6 +93,11 @@ static Boolean _ScrollMotiveSetValues(Widget, Widget, Widget, ArgList, Cardinal 
 
 static void _ScrollMotiveDrawLines(Widget w, int from_line, int to_line);
 static void _ScrollMotiveCreateScrollbar(Widget w);
+static int _ScrollMotiveParseLine(const char *line, TextSegment *segments,
+                                   int max_segments, int left_margin,
+                                   int h_width);
+static void _ScrollMotiveRenderSegment(Widget w, TextSegment *seg,
+                                        XftRenderingContext *ctx, int y);
 static void VerticalScroll(Widget w, XtPointer client_data, XtPointer call_data);
 static void VerticalJump(Widget w, XtPointer client_data, XtPointer call_data);
 
@@ -370,6 +399,11 @@ _ScrollMotiveRealize(Widget w, XtValueMask *mask,
     smw->scroll.render_ctx.visual = smw->scroll.visual;
     smw->scroll.render_ctx.colormap = smw->scroll.colormap;
 
+    if (smw->scroll.fonts != NULL && smw->scroll.fonts->normal != NULL) {
+        smw->scroll.font_height = XftGetFontHeight(smw->scroll.fonts->normal);
+        smw->scroll.h_width = XftGetFontWidth(smw->scroll.fonts->normal);
+    }
+
     smw->scroll.back_pixmap = XCreatePixmap(
         dpy, XtWindow(w),
         w->core.width, w->core.height,
@@ -631,6 +665,189 @@ _ScrollMotiveSetValues(Widget old, Widget request, Widget new_w,
 
 /****************************************************************
  *
+ * _ScrollMotiveParseLine — Parse nroff formatting in a man page line
+ *
+ ****************************************************************/
+
+static int
+_ScrollMotiveParseLine(const char *line, TextSegment *segments,
+                        int max_segments, int left_margin, int h_width)
+{
+    const char *c = line;
+    char buf[BUFSIZ];
+    char *bufp = buf;
+    int seg_count = 0;
+    int h_col = 0;
+    int x_pos = left_margin;
+    Boolean italicflag = FALSE;
+    SegmentType flush_type;
+
+    if (line == NULL || *line == '\0' || *line == '\n') {
+        segments[0].type = SEGMENT_NORMAL;
+        segments[0].text[0] = '\0';
+        segments[0].len = 0;
+        segments[0].x_position = left_margin;
+        return 1;
+    }
+
+#define FLUSH_BUF(seg_type) do {                                       \
+    if (bufp > buf) {                                                   \
+        int _len = (int)(bufp - buf);                                   \
+        if (seg_count >= max_segments) goto done;                       \
+        segments[seg_count].type = (seg_type);                          \
+        memcpy(segments[seg_count].text, buf, _len);                    \
+        segments[seg_count].text[_len] = '\0';                         \
+        segments[seg_count].len = _len;                                 \
+        segments[seg_count].x_position = x_pos;                         \
+        h_col += _len;                                                  \
+        seg_count++;                                                    \
+        bufp = buf;                                                     \
+        x_pos = left_margin + h_col * h_width;                         \
+    }                                                                   \
+} while(0)
+
+    while (*c != '\0') {
+        if (seg_count >= max_segments)
+            goto done;
+
+        if ((bufp - buf) > (BUFSIZ - 10)) {
+            while (*c != '\n' && *c != '\0')
+                c++;
+            continue;
+        }
+
+        switch (*c) {
+        case '\n':
+            flush_type = italicflag ? SEGMENT_ITALIC : SEGMENT_NORMAL;
+            FLUSH_BUF(flush_type);
+            goto done;
+
+        case '\t':
+            flush_type = italicflag ? SEGMENT_ITALIC : SEGMENT_NORMAL;
+            FLUSH_BUF(flush_type);
+            italicflag = FALSE;
+            h_col = h_col + 8 - (h_col % 8);
+            x_pos = left_margin + h_col * h_width;
+            c++;
+            break;
+
+        case BACKSPACE:
+            if (c > line && c[-1] == c[1] && c[1] != BACKSPACE) {
+                if (bufp > buf) {
+                    bufp--;
+                    flush_type = italicflag ? SEGMENT_ITALIC : SEGMENT_NORMAL;
+                    FLUSH_BUF(flush_type);
+                }
+                bufp = buf;
+                *bufp++ = c[1];
+                FLUSH_BUF(SEGMENT_BOLD);
+                italicflag = FALSE;
+                while (*c == BACKSPACE && c > line && c[-1] == c[1])
+                    c += 2;
+                c--;
+            }
+            else if (c > line &&
+                     ((c[-1] == 'o' && c[1] == '+') ||
+                      (c[-1] == '+' && c[1] == 'o'))) {
+                if (bufp > buf) {
+                    bufp--;
+                    flush_type = italicflag ? SEGMENT_ITALIC : SEGMENT_NORMAL;
+                    FLUSH_BUF(flush_type);
+                }
+                bufp = buf;
+                *bufp = (char) 183;
+                FLUSH_BUF(SEGMENT_SYMBOL);
+                c++;
+            }
+            else {
+                if (bufp > buf)
+                    bufp--;
+                c++;
+            }
+            break;
+
+        case '_':
+            if (*(c + 1) == BACKSPACE) {
+                if (!italicflag) {
+                    FLUSH_BUF(SEGMENT_NORMAL);
+                    italicflag = TRUE;
+                }
+                c += 2;
+                *bufp++ = *c;
+                break;
+            }
+            /* FALLTHROUGH */
+
+        default:
+            if (italicflag) {
+                FLUSH_BUF(SEGMENT_ITALIC);
+            }
+            *bufp++ = *c;
+            break;
+        }
+        c++;
+    }
+
+    flush_type = italicflag ? SEGMENT_ITALIC : SEGMENT_NORMAL;
+    FLUSH_BUF(flush_type);
+
+#undef FLUSH_BUF
+
+done:
+    return seg_count;
+}
+
+/****************************************************************
+ *
+ * _ScrollMotiveRenderSegment — Render a single text segment with Xft
+ *
+ ****************************************************************/
+
+static void
+_ScrollMotiveRenderSegment(Widget w, TextSegment *seg,
+                             XftRenderingContext *ctx, int y)
+{
+    ScrollMotiveWidget smw = (ScrollMotiveWidget) w;
+    XftFont *font;
+    int font_height, font_ascent;
+    int width;
+
+    if (seg->len == 0)
+        return;
+
+    switch (seg->type) {
+    case SEGMENT_BOLD:
+        font = smw->scroll.fonts->bold;
+        break;
+    case SEGMENT_ITALIC:
+        font = smw->scroll.fonts->italic;
+        break;
+    case SEGMENT_SYMBOL:
+        font = smw->scroll.fonts->symbol;
+        break;
+    default:
+        font = smw->scroll.fonts->normal;
+        break;
+    }
+
+    if (font == NULL)
+        font = smw->scroll.fonts->normal;
+
+    font_height = XftGetFontHeight(font);
+    font_ascent = XftGetFontAscent(font);
+    width = seg->len * smw->scroll.h_width;
+
+    XftDrawRect(ctx->draw, &ctx->bg_color,
+                 seg->x_position, y - font_ascent,
+                 width, font_height);
+
+    XftDrawStringUtf8(ctx->draw, &ctx->fg_color, font,
+                       seg->x_position, y,
+                       (const FcChar8 *) seg->text, seg->len);
+}
+
+/****************************************************************
+ *
  * _ScrollMotiveDrawLines — render visible lines with Xft
  *
  ****************************************************************/
@@ -643,6 +860,12 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
     int y_pos;
     int line;
     int left_margin;
+    int h_width;
+    int font_ascent;
+    int font_height;
+    TextSegment segments[MAX_SEGMENTS];
+    int num_segs;
+    int i;
 
     if (smw->scroll.top_line == NULL || smw->scroll.fonts == NULL)
         return;
@@ -651,6 +874,9 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
         return;
 
     current_font = smw->scroll.fonts->normal;
+    font_height = XftGetFontHeight(current_font);
+    font_ascent = XftGetFontAscent(current_font);
+    h_width = XftGetFontWidth(current_font);
 
     left_margin = (int) smw->scroll.indent;
     if (smw->scroll.scrollbar != NULL) {
@@ -658,7 +884,7 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
                        smw->scroll.scrollbar->core.border_width;
     }
 
-    y_pos = XftGetFontAscent(current_font);
+    y_pos = font_ascent;
 
     for (line = from_line;
          line < to_line && line < smw->scroll.lines;
@@ -666,24 +892,22 @@ _ScrollMotiveDrawLines(Widget w, int from_line, int to_line)
         char *text = smw->scroll.top_line[line];
 
         if (text == NULL || *text == '\0' || *text == '\n') {
-            y_pos += XftGetFontHeight(current_font);
+            y_pos += font_height;
             continue;
         }
 
-        XClearArea(XtDisplay(w), XtWindow(w),
-                    left_margin, y_pos - XftGetFontAscent(current_font),
-                    w->core.width - left_margin,
-                    XftGetFontHeight(current_font),
-                    False);
+        num_segs = _ScrollMotiveParseLine(text, segments, MAX_SEGMENTS,
+                                           left_margin, h_width);
 
-        XftDrawStringUtf8(smw->scroll.render_ctx.draw,
-                          &smw->scroll.fg_color,
-                          current_font,
-                          left_margin, y_pos,
-                          (const FcChar8 *) text,
-                          (int) strlen(text));
+        for (i = 0; i < num_segs; i++) {
+            if (segments[i].len > 0) {
+                _ScrollMotiveRenderSegment(w, &segments[i],
+                                            &smw->scroll.render_ctx,
+                                            y_pos);
+            }
+        }
 
-        y_pos += XftGetFontHeight(current_font);
+        y_pos += font_height;
     }
 }
 
