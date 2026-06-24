@@ -384,7 +384,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `headers: replace Xaw includes with Xm/Xft includes in man.h`
   - Files: `man.h`
 
-- [ ] 3. Create Xft font utility subsystem (xft_utils.c/h)
+- [x] 3. Create Xft font utility subsystem (xft_utils.c/h)
 
   **What to do**:
   - Create `xft_utils.h`: Public API for Xft font management

@@ -77,6 +77,10 @@ from the X Consortium.
 
 #include <X11/Xft/Xft.h>
 
+/* Xft utility subsystem. */
+
+#include "xft_utils.h"
+
 /* program specific header files. */
 
 #include "scroll_motive.h"
@@ -97,7 +101,7 @@ from the X Consortium.
 
 typedef struct _XmanFonts {
     XFontStruct *directory;         /* DEPRECATED: The font for the directory.  */
-    XftFontSet *manpage_fonts;      /* Xft font set for manpage rendering. */
+    XmanFontSet *manpage_fonts;      /* Xft font set for manpage rendering. */
     XftFont *directory_font;        /* Xft font for directory entries. */
 } XmanFonts;
 

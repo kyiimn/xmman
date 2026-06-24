@@ -30,3 +30,16 @@
 - Added scroll_motive.c, scroll_motive.h, scroll_motiveP.h, xft_utils.c, xft_utils.h, xman_fonts.c, xman_fonts.h
 - Added $(XM_CFLAGS) and $(XFT_CFLAGS) to AM_CFLAGS
 - xman_LDADD unchanged (still uses $(XMAN_LIBS) which now includes XM and XFT)
+
+## xft_utils Subsystem (Task 4)
+
+### Key Findings
+- **`XftFontSet` is already a typedef** in `<X11/Xft/Xft.h>` (it's `FcFontSet`). Our struct was renamed to `XmanFontSet` to avoid conflict.
+- **`XftCreateContext` needs `Display *dpy`** — not in original task spec signature but required by `XftDrawCreate`, `XftColorAllocValue`, `XftColorFree`. Added as first parameter.
+- **`XftFreeFontSet` needs `Display *dpy`** — required by `XftFontClose`. Added parameter.
+- **`XftDestroyContext` needs `Display *dpy`** — required by `XftColorFree`. Added parameter.
+- **man.h now includes `xft_utils.h`** — needed so the `XmanFontSet` type is visible where `XmanFonts` struct uses it.
+- **Font color allocation**: `XftCreateContext` uses `XQueryColor` to convert pixel values to `XRenderColor`, with black (0,0,0,0xffff) and white (0xffff,0xffff,0xffff,0xffff) as defaults when pixel=0.
+- **CJK fallback chains hardcoded in `XftLoadFontSet`**: Monospace chain for body, with style variants for bold/italic.
+- Clean compile with `gcc -c -I. -Wall -Wextra -pedantic xft_utils.c $(pkg-config --cflags xft fontconfig)` — zero warnings.
+- LSP clangd errors about `ft2build.h not found` are false positives from clangd not finding FreeType includes (gcc compiles fine).
