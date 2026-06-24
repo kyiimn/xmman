@@ -131,3 +131,74 @@ XmManFreeFonts(Display *dpy, XmManFonts *fonts)
         fonts->directory_font = NULL;
     }
 }
+
+/*
+ * XmManCreateUIRenderTable — Create an XmRenderTable with Xft font for Motif UI widgets.
+ *
+ * Uses the NanumMyeongjo proportional fallback chain to build a pattern,
+ * then creates a single XmRendition tagged XmFONTLIST_DEFAULT_TAG.
+ * Returns a render table that can be set as XmNrenderTable on any widget.
+ * Returns NULL only if even "fixed" core font fails.
+ */
+XmRenderTable
+XmManCreateUIRenderTable(Widget widget)
+{
+    Display *dpy = XtDisplay(widget);
+    int screen = XScreenNumberOfScreen(XtScreen(widget));
+    Arg args[8];
+    Cardinal n;
+    XmRendition rend;
+    XmRenderTable rt;
+    XftFont *test_font;
+    const char *chosen_family = NULL;
+    char *pattern = NULL;
+
+    /* Try fallback chain — probe with full pattern, use family name for rendition */
+    const char *families[] = {
+        XMMAN_UI_FONT,
+        XMMAN_UI_FALLBACK_1,
+        XMMAN_UI_FALLBACK_2,
+        XMMAN_UI_FALLBACK_3,
+        XMMAN_UI_FALLBACK_4,
+        NULL
+    };
+
+    for (int i = 0; families[i] != NULL; i++) {
+        pattern = XftFontBuildPattern(families[i],
+                                        XMMAN_DIRECTORY_FONT_SIZE,
+                                        FC_WEIGHT_MEDIUM, FC_SLANT_ROMAN);
+        test_font = XftFontOpenName(dpy, screen, pattern);
+        if (test_font != NULL) {
+            XftFontClose(dpy, test_font);
+            chosen_family = families[i];
+            free(pattern);
+            pattern = NULL;
+            break;
+        }
+        free(pattern);
+        pattern = NULL;
+    }
+
+    if (chosen_family == NULL) {
+        /* Absolute fallback to core X font */
+        n = 0;
+        XtSetArg(args[n], XmNfontName, (XtArgVal)"fixed"); n++;
+        XtSetArg(args[n], XmNfontType, XmFONT_IS_FONT); n++;
+        XtSetArg(args[n], XmNloadModel, XmLOAD_IMMEDIATE); n++;
+        rend = XmRenditionCreate(widget, XmFONTLIST_DEFAULT_TAG, args, n);
+    } else {
+        n = 0;
+        XtSetArg(args[n], XmNfontType, XmFONT_IS_XFT); n++;
+        XtSetArg(args[n], XmNfontName, (XtArgVal)chosen_family); n++;
+        XtSetArg(args[n], XmNfontSize, XMMAN_DIRECTORY_FONT_SIZE); n++;
+        XtSetArg(args[n], XmNloadModel, XmLOAD_IMMEDIATE); n++;
+        rend = XmRenditionCreate(widget, XmFONTLIST_DEFAULT_TAG, args, n);
+    }
+
+    if (rend == NULL)
+        return NULL;
+
+    rt = XmRenderTableAddRenditions(NULL, &rend, 1, XmMERGE_NEW);
+    XmRenditionFree(rend);
+    return rt;
+}

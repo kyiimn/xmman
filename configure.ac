@@ -113,9 +113,11 @@ AC_SUBST(XFT_LIBS)
 # Core X dependencies
 PKG_CHECK_MODULES(XMMAN, [xproto >= 7.0.17 xt])
 
-# Merge Motif and Xft flags into XMMAN variables for build convenience
-XMMAN_CFLAGS="$XMMAN_CFLAGS $XM_CFLAGS $XFT_CFLAGS"
-XMMAN_LIBS="$XMMAN_LIBS $XM_LIBS $XFT_LIBS"
+# Merge Motif and Xft flags into XMMAN variables for build convenience.
+# Xm must appear before Xt in link order so that Motif's XtRealizeWidget
+# override resolves correctly instead of falling through to Xt's stub.
+XMMAN_CFLAGS="$XM_CFLAGS $XFT_CFLAGS $XMMAN_CFLAGS"
+XMMAN_LIBS="$XM_LIBS $XFT_LIBS $XMMAN_LIBS"
 
 AC_ARG_WITH(manconfig,
         AS_HELP_STRING([--with-manconfig=<filename>],

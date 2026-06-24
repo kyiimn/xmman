@@ -19,6 +19,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xft/Xft.h>
+#include <Xm/Xm.h>
 #include "xft_utils.h"  /* for XmManFontSet */
 
 struct _XmManFonts;
@@ -59,5 +60,13 @@ XftFont *XmManLoadDirectoryFont(Display *dpy, int screen);
 
 /* Free all loaded fonts */
 void XmManFreeFonts(Display *dpy, struct _XmManFonts *fonts);
+
+/*
+ * Create an XmRenderTable with Xft font for Motif UI widgets.
+ * Uses NanumMyeongjo proportional fallback chain.
+ * Returns a render table that can be set as XmNrenderTable on any widget.
+ * Returns NULL only if even "fixed" core font fails.
+ */
+XmRenderTable XmManCreateUIRenderTable(Widget widget);
 
 #endif /* XMMAN_FONTS_H */

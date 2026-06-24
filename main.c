@@ -94,9 +94,6 @@ static XtResource my_resources[] = {
  */
 
 static String fallback_resources[] = {
-    "XmMan*quitButton.translations:	#override \\n   <Btn1Up>: Quit() reset()",
-    "XmMan*manpageButton.Label:		Manual Page",
-    "XmMan*topLabel.Label:			No App-Defaults File",
     NULL,
 };
 
@@ -117,6 +114,15 @@ static XrmOptionDescRec xmman_options[] = {
     {"-iconic", "iconic", XrmoptionNoArg, (caddr_t) "True"},
 };
 
+static void
+NoopAction(Widget w, XEvent *event, String *params, Cardinal *num_params)
+{
+    (void)w;
+    (void)event;
+    (void)params;
+    (void)num_params;
+}
+
 static XtActionsRec xmman_actions[] = {
     {"GotoPage", GotoPage},
     {"Quit", Quit},
@@ -128,6 +134,9 @@ static XtActionsRec xmman_actions[] = {
     {"RemoveThisManpage", RemoveThisManpage},
     {"SaveFormattedPage", SaveFormattedPage},
     {"ShowVersion", ShowVersion},
+    {"reset", NoopAction},
+    {"XawPositionSimpleMenu", NoopAction},
+    {"Page", NoopAction},
 };
 
 char **saved_argv;
@@ -172,9 +181,28 @@ main(int argc, char **argv)
         }
     }
 
-    initial_widget = XtAppInitialize(&app_con, "XmMan", xmman_options,
-                                     XtNumber(xmman_options), &argc, argv,
-                                     fallback_resources, NULL, ZERO);
+    /* Register actions BEFORE opening display so that translation
+     * parsing in app-defaults can find our actions (Quit, CreateNewManpage,
+     * PopupHelp, PopupSearch, etc.). No-op stubs for Xaw actions (reset,
+     * XawPositionSimpleMenu, Page) suppress "Actions not found" warnings. */
+    XtToolkitInitialize();
+    app_con = XtCreateApplicationContext();
+    XtAppSetFallbackResources(app_con, fallback_resources);
+    XtAppAddActions(app_con, xmman_actions, XtNumber(xmman_actions));
+
+    {
+        Display *dpy = XtOpenDisplay(app_con, NULL, "XmMan", "XmMan",
+                                     xmman_options, XtNumber(xmman_options),
+                                     &argc, argv);
+        if (dpy == NULL) {
+            fprintf(stderr, "%s: Can't open display\n", argv[0]);
+            exit(1);
+        }
+        initial_widget = XtAppCreateShell("XmMan", "XmMan",
+                                         applicationShellWidgetClass, dpy,
+                                         NULL, ZERO);
+    }
+
     wm_delete_window =
         XInternAtom(XtDisplay(initial_widget), "WM_DELETE_WINDOW", False);
 
@@ -190,8 +218,6 @@ main(int argc, char **argv)
         ArgError(argc, argv);
         return EXIT_FAILURE;
     }
-
-    XtAppAddActions(app_con, xmman_actions, XtNumber(xmman_actions));
 
     if (!resources.manpage_font_normal)
         PrintError("Failed to get the manpage font pattern.");

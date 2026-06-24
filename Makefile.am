@@ -25,8 +25,8 @@ bin_PROGRAMS = xmman
 helpdir=@HELPDIR@
 dist_help_DATA = xmman.help
 
-AM_CFLAGS = $(CWARNFLAGS) $(XMMAN_CFLAGS) $(XM_CFLAGS) $(XFT_CFLAGS) -D_CONST_X_STRING \
-	-D_BSD_SOURCE -DHELPFILE=\"$(helpdir)/xmman.help\" -DHAVE_CONFIG_H
+AM_CFLAGS = $(CWARNFLAGS) $(XMMAN_CFLAGS) -D_CONST_X_STRING \
+	-D_DEFAULT_SOURCE -DHELPFILE=\"$(helpdir)/xmman.help\" -DHAVE_CONFIG_H
 xmman_LDADD = $(XMMAN_LIBS) $(LIBOBJS)
 
 xmman_SOURCES =	\

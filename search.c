@@ -31,6 +31,7 @@ from the X Consortium.
 
 #include "globals.h"
 #include "vendor.h"
+#include "xmman_fonts.h"
 
 /* Map <CR> and control-M to goto beginning of file. */
 
@@ -63,6 +64,12 @@ MakeSearchWidget(ManpageGlobals * man_globals, Widget parent)
     form = XtCreateManagedWidget(DIALOG, xmFormWidgetClass,
                                  man_globals->search_widget, NULL, (Cardinal) 0);
 
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(form, rt_args, 1);
+    }
+
     /* Create text field */
     n = 0;
     XtSetArg(args[n], XmNleftAttachment, XmATTACH_FORM); n++;
@@ -74,6 +81,16 @@ MakeSearchWidget(ManpageGlobals * man_globals, Widget parent)
     }
     text_field = XtCreateManagedWidget("value", xmTextFieldWidgetClass, form, args, n);
     man_globals->text_widget = text_field;
+    XtOverrideTranslations(text_field,
+        XtParseTranslationTable(
+            "<Key>Return: Search(manualPage, Open)\n"
+            "Ctrl<Key>m: Search(manualPage, Open)"));
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(text_field, rt_args, 1);
+    }
 
     /* Create Manual Search button */
     label_str = XmStringCreateLocalized(MANUALSEARCH);
@@ -85,7 +102,9 @@ MakeSearchWidget(ManpageGlobals * man_globals, Widget parent)
     manual_btn = XtCreateManagedWidget(MANUALSEARCH, xmPushButtonWidgetClass, form, args, n);
     XmStringFree(label_str);
     XtOverrideTranslations(manual_btn,
-        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
+        XtParseTranslationTable(
+            "<Btn1Down>: Arm()\n"
+            "<Btn1Up>: Activate() Disarm() Search(manualPage, Open)"));
 
     /* Create Apropos Search button */
     label_str = XmStringCreateLocalized(APROPOSSEARCH);
@@ -98,7 +117,9 @@ MakeSearchWidget(ManpageGlobals * man_globals, Widget parent)
     apropos_btn = XtCreateManagedWidget(APROPOSSEARCH, xmPushButtonWidgetClass, form, args, n);
     XmStringFree(label_str);
     XtOverrideTranslations(apropos_btn,
-        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
+        XtParseTranslationTable(
+            "<Btn1Down>: Arm()\n"
+            "<Btn1Up>: Activate() Disarm() Search(apropos, Open)"));
 
     /* Create Cancel button */
     label_str = XmStringCreateLocalized(CANCEL);
@@ -111,7 +132,17 @@ MakeSearchWidget(ManpageGlobals * man_globals, Widget parent)
     cancel_btn = XtCreateManagedWidget(CANCEL, xmPushButtonWidgetClass, form, args, n);
     XmStringFree(label_str);
     XtOverrideTranslations(cancel_btn,
-        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
+        XtParseTranslationTable(
+            "<Btn1Down>: Arm()\n"
+            "<Btn1Up>: Activate() Disarm() RemoveSearch()"));
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(manual_btn, rt_args, 1);
+        XtSetValues(apropos_btn, rt_args, 1);
+        XtSetValues(cancel_btn, rt_args, 1);
+    }
 }
 
 /*      Function Name: SearchString

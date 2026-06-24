@@ -522,6 +522,27 @@ CreateNewManpage(Widget w, XEvent * event, String * params,
         man_pages_shown++;
 }
 
+/*ARGSUSED*/
+static void
+ManpageDestroyCallback(Widget w, XtPointer client_data, XtPointer call_data)
+{
+    ManpageGlobals *man_globals = (ManpageGlobals *) client_data;
+    XtAppContext app_con = XtWidgetToApplicationContext(w);
+
+    for (int i = 0; i < sections; i++) {
+        if (man_globals->section_name[i] != NULL)
+            XtFree(man_globals->section_name[i]);
+    }
+    XtFree((char *) man_globals->section_name);
+    XtFree((char *) man_globals->manpagewidgets.box);
+    XtFree((char *) man_globals);
+
+    if ((--man_pages_shown) == 0)
+        XtAppSetExitFlag(app_con);
+
+    (void)call_data;
+}
+
 /*      Function Name: RemoveThisManpage
  *      Description: Removes a manual page.
  *      Arguments: w - any widget in the manpage.
@@ -539,17 +560,9 @@ RemoveThisManpage(Widget w, XEvent * event, String * params,
 
     if (man_globals->This_Manpage != help_widget) {
         RemoveGlobals(man_globals->This_Manpage);
+        XtAddCallback(man_globals->This_Manpage, XtNdestroyCallback,
+                      ManpageDestroyCallback, (XtPointer) man_globals);
         XtDestroyWidget(man_globals->This_Manpage);
-
-        for (int i = 0; i < sections; i++) {
-            XtFree(man_globals->section_name[i]);
-        }
-        XtFree((char *) man_globals->section_name);
-        XtFree((char *) man_globals->manpagewidgets.box);
-        XtFree((char *) man_globals);
-
-        if ((--man_pages_shown) == 0)
-            Quit(w, NULL, NULL, NULL);
     }
     else
         XtPopdown(help_widget);

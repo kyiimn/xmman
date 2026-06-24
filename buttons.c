@@ -37,6 +37,8 @@ from the X Consortium.
 #include "globals.h"
 #include "vendor.h"
 #include "scroll_motiveP.h"
+#include "xmman_fonts.h"
+#include <Xm/RowColumn.h>
 
 /* The files with the icon bits in them. */
 
@@ -78,6 +80,8 @@ MakeTopBox(void)
     n++;
     XtSetArg(args[n], XtNtitle, resources.title);
     n++;
+    XtSetArg(args[n], XtNiconName, "XmMan");
+    n++;
     XtSetArg(args[n], XtNiconic, resources.iconic);
     n++;
     top = XtCreatePopupShell(TOPBOXNAME, topLevelShellWidgetClass,
@@ -85,6 +89,21 @@ MakeTopBox(void)
 
     form = XtCreateManagedWidget("form", xmFormWidgetClass, top,
                                  NULL, (Cardinal) 0);
+
+    ui_render_table = XmManCreateUIRenderTable(form);
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(form, rt_args, 1);
+    }
+
+    XtOverrideTranslations(form,
+        XtParseTranslationTable(
+            "Ctrl<Key>q: Quit()\n"
+            "Ctrl<Key>c: Quit()\n"
+            "Ctrl<Key>n: CreateNewManpage()\n"
+            "Ctrl<Key>h: PopupHelp()\n"
+            "Ctrl<Key>s: PopupSearch()"));
 
     /* topLabel: spans full width, attached to top of form */
     label_str = XmStringCreateLocalized("XmMan");
@@ -108,7 +127,9 @@ MakeTopBox(void)
                                      form, args, n);
     XmStringFree(label_str);
     XtOverrideTranslations(help_cmd,
-        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
+        XtParseTranslationTable(
+            "<Btn1Down>: Arm()\n"
+            "<Btn1Up>: Activate() Disarm() PopupHelp()"));
 
     /* Quit button: right of Help, same row */
     label_str = XmStringCreateLocalized("Quit");
@@ -123,7 +144,9 @@ MakeTopBox(void)
                                      form, args, n);
     XmStringFree(label_str);
     XtOverrideTranslations(quit_cmd,
-        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
+        XtParseTranslationTable(
+            "<Btn1Down>: Arm()\n"
+            "<Btn1Up>: Activate() Disarm() Quit()"));
 
     /* Manpage button: full width, below Help/Quit row */
     label_str = XmStringCreateLocalized("Manual Page");
@@ -137,7 +160,18 @@ MakeTopBox(void)
                                         form, args, n);
     XmStringFree(label_str);
     XtOverrideTranslations(manpage_cmd,
-        XtParseTranslationTable("<Btn1Down>: Arm() <Btn1Up>: Activate() Disarm()"));
+        XtParseTranslationTable(
+            "<Btn1Down>: Arm()\n"
+            "<Btn1Up>: Activate() Disarm() CreateNewManpage()"));
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(label, rt_args, 1);
+        XtSetValues(help_cmd, rt_args, 1);
+        XtSetValues(quit_cmd, rt_args, 1);
+        XtSetValues(manpage_cmd, rt_args, 1);
+    }
 
     help_widget = NULL;         /* We have not seen the help yet. */
 
@@ -255,6 +289,14 @@ CreateManpageWidget(ManpageGlobals * man_globals,
     mytop = XtCreatePopupShell(name, topLevelShellWidgetClass, initial_widget,
                                arglist, num_args);
 
+    {
+        Arg title_args[2];
+        Cardinal title_n = 0;
+        XtSetArg(title_args[title_n], XtNtitle, "Manual Page"); title_n++;
+        XtSetArg(title_args[title_n], XtNiconName, "Manual Page"); title_n++;
+        XtSetValues(mytop, title_args, title_n);
+    }
+
     man_globals->This_Manpage = mytop;
     num_args = 0;
     if (full_instance)
@@ -273,8 +315,30 @@ CreateManpageWidget(ManpageGlobals * man_globals,
     pane = XtCreateManagedWidget("vertPane", xmPanedWindowWidgetClass, mytop,
                                  NULL, (Cardinal) 0);
 
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(pane, rt_args, 1);
+    }
+
     hpane = XtCreateManagedWidget("horizPane", xmPanedWindowWidgetClass,
                                   pane, NULL, (Cardinal) 0);
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(hpane, rt_args, 1);
+    }
+
+    Widget options;
+    Widget menu_bar = XmCreateMenuBar(hpane, "menuBar", NULL, (Cardinal) 0);
+    XtManageChild(menu_bar);
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(menu_bar, rt_args, 1);
+    }
 
     CreateOptionMenu(man_globals, mytop);
 
@@ -282,8 +346,8 @@ CreateManpageWidget(ManpageGlobals * man_globals,
     XtSetArg(args[n], XmNsubMenuId, man_globals->option_menu); n++;
     label_str = XmStringCreateLocalized("Options");
     XtSetArg(args[n], XmNlabelString, label_str); n++;
-    (void) XtCreateManagedWidget("options", xmCascadeButtonWidgetClass,
-                                 hpane, args, n);
+    options = XtCreateManagedWidget("options", xmCascadeButtonWidgetClass,
+                                    menu_bar, args, n);
     XmStringFree(label_str);
 
     if (full_instance) {
@@ -293,12 +357,12 @@ CreateManpageWidget(ManpageGlobals * man_globals,
         label_str = XmStringCreateLocalized("Sections");
         XtSetArg(args[n], XmNlabelString, label_str); n++;
         mysections = XtCreateManagedWidget("sections", xmCascadeButtonWidgetClass,
-                                           hpane, args, n);
+                                           menu_bar, args, n);
         XmStringFree(label_str);
     }
     else {
         mysections = XtCreateManagedWidget("sections", xmCascadeButtonWidgetClass,
-                                            hpane, NULL, (Cardinal) 0);
+                                            menu_bar, NULL, (Cardinal) 0);
         XtSetSensitive(mysections, FALSE);
     }
 
@@ -307,6 +371,15 @@ CreateManpageWidget(ManpageGlobals * man_globals,
     XtSetArg(args[n], XmNlabelString, label_str); n++;
     XtSetValues(man_globals->both_screens_entry, args, n);
     XmStringFree(label_str);
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(man_globals->label, rt_args, 1);
+        XtSetValues(options, rt_args, 1);
+        if (full_instance)
+            XtSetValues(mysections, rt_args, 1);
+    }
 
     if (full_instance) {
         MakeSearchWidget(man_globals, mytop);
@@ -344,6 +417,44 @@ CreateManpageWidget(ManpageGlobals * man_globals,
 
     mpw->manpage = XtCreateWidget(MANUALPAGE, scrollMotiveWidgetClass,
                                     pane, NULL, (Cardinal) 0);
+
+    XtOverrideTranslations(mpw->manpage,
+        XtParseTranslationTable(
+            "Ctrl<Key>q: Quit()\n"
+            "Ctrl<Key>c: Quit()\n"
+            "Ctrl<Key>r: RemoveThisManpage()\n"
+            "Ctrl<Key>n: CreateNewManpage()\n"
+            "Ctrl<Key>h: PopupHelp()\n"
+            "Ctrl<Key>d: GotoPage(Directory)\n"
+            "Ctrl<Key>m: GotoPage(ManualPage)\n"
+            "Ctrl<Key>v: ShowVersion()\n"
+            "Ctrl<Key>s: PopupSearch()"));
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(mpw->manpage, rt_args, 1);
+    }
+
+    if (full_instance) {
+        XtOverrideTranslations(mpw->directory,
+            XtParseTranslationTable(
+                "Ctrl<Key>q: Quit()\n"
+                "Ctrl<Key>c: Quit()\n"
+                "Ctrl<Key>r: RemoveThisManpage()\n"
+                "Ctrl<Key>n: CreateNewManpage()\n"
+                "Ctrl<Key>h: PopupHelp()\n"
+                "Ctrl<Key>d: GotoPage(Directory)\n"
+                "Ctrl<Key>m: GotoPage(ManualPage)\n"
+                "Ctrl<Key>v: ShowVersion()\n"
+                "Ctrl<Key>s: PopupSearch()"));
+    }
+
+    if (ui_render_table != NULL && full_instance) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(mpw->directory, rt_args, 1);
+    }
 
     {
         ScrollMotiveWidget smw = (ScrollMotiveWidget) mpw->manpage;
@@ -511,6 +622,11 @@ CreateOptionMenu(ManpageGlobals * man_globals, Widget parent)
         XmStringFree(label_str);
         XtAddCallback(entry, XmNactivateCallback, OptionCallback,
                       (XtPointer) man_globals);
+        if (ui_render_table != NULL) {
+            Arg rt_args[1];
+            XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+            XtSetValues(entry, rt_args, 1);
+        }
         switch (i) {
         case 0:
             man_globals->dir_entry = entry;
@@ -583,6 +699,11 @@ CreateSectionMenu(ManpageGlobals * man_globals, Widget parent)
                       (caddr_t) menu_struct);
         XtAddCallback(entry, XtNdestroyCallback, MenuDestroy,
                       (caddr_t) menu_struct);
+        if (ui_render_table != NULL) {
+            Arg rt_args[1];
+            XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+            XtSetValues(entry, rt_args, 1);
+        }
     }
 }
 
@@ -629,6 +750,12 @@ MakeDirectoryBox(ManpageGlobals * man_globals, Widget parent, Widget * dir_disp,
     XtSetArg(args[n], XmNselectionPolicy, XmBROWSE_SELECT); n++;
     list_w = XtCreateManagedWidget("dirList", xmListWidgetClass,
                                    parent, args, n);
+
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(list_w, rt_args, 1);
+    }
 
     for (i = 0; i < manual[section].nentries; i++) {
         XmStringFree(str_list[i]);
@@ -712,13 +839,26 @@ MakeSaveWidgets(ManpageGlobals * man_globals, Widget parent)
     XtSetArg(args[n], XmNdialogType, XmDIALOG_INFORMATION); n++;
     man_globals->standby = XmCreateMessageBox(shell, "standbyDialog", args, n);
     XmStringFree(label_str);
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(man_globals->standby, rt_args, 1);
+    }
     XtUnmanageChild(XmMessageBoxGetChild(man_globals->standby,
                                          XmDIALOG_CANCEL_BUTTON));
     XtUnmanageChild(XmMessageBoxGetChild(man_globals->standby,
                                          XmDIALOG_HELP_BUTTON));
     XtManageChild(man_globals->standby);
 
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(man_globals->search_widget, rt_args, 1);
+        XtSetValues(shell, rt_args, 1);
+    }
+
 /* make the would you like to save popup widget. */
+
     n = 0;
     if (XtIsRealized(parent)) {
         XtSetArg(args[n], XtNtransientFor, parent);
@@ -740,6 +880,12 @@ MakeSaveWidgets(ManpageGlobals * man_globals, Widget parent)
     XmStringFree(label_str);
     XmStringFree(ok_str);
     XmStringFree(cancel_str);
+    if (ui_render_table != NULL) {
+        Arg rt_args[1];
+        XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+        XtSetValues(dialog, rt_args, 1);
+        XtSetValues(man_globals->save, rt_args, 1);
+    }
     XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_HELP_BUTTON));
     XtAddCallback(dialog, XmNokCallback, SaveOkCallback, NULL);
     XtAddCallback(dialog, XmNcancelCallback, SaveCancelCallback, NULL);

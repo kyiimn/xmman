@@ -40,6 +40,7 @@ from the X Consortium.
 
 #include "globals.h"
 #include "vendor.h"
+#include "xmman_fonts.h"
 #include <X11/Xos.h>            /* sys/types.h and unistd.h included in here */
 #include <sys/stat.h>
 #include <errno.h>
@@ -116,6 +117,11 @@ PopupWarning(ManpageGlobals * man_globals, const char *string)
         XtSetArg(wargs[n], XmNdialogType, XmDIALOG_WARNING); n++;
         warnDialog = XmCreateMessageBox(warnShell, "warnDialog", wargs, n);
         XmStringFree(msg);
+        if (ui_render_table != NULL) {
+            Arg rt_args[1];
+            XtSetArg(rt_args[0], XmNrenderTable, ui_render_table);
+            XtSetValues(warnDialog, rt_args, 1);
+        }
         XtUnmanageChild(XmMessageBoxGetChild(warnDialog,
                                               XmDIALOG_CANCEL_BUTTON));
         XtUnmanageChild(XmMessageBoxGetChild(warnDialog,

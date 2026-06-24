@@ -60,5 +60,6 @@ extern int saved_argc;
 extern Atom wm_delete_window;
 
 extern Widget top;
+extern XmRenderTable ui_render_table;
 
 #endif /* _globals_h */

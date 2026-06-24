@@ -52,3 +52,5 @@ int man_pages_shown;            /* The current number of manual
 Widget initial_widget;          /* The initial widget, never realized. */
 
 XContext manglobals_context;    /* The context for man_globals. */
+
+XmRenderTable ui_render_table;

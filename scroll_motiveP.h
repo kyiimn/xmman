@@ -22,7 +22,7 @@
 #include <X11/Xft/Xft.h>
 #include "scroll_motive.h"
 #include "xft_utils.h"
-#include "xman_fonts.h"
+#include "xmman_fonts.h"
 
 /***********************************************************************
  *

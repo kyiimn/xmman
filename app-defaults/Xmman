@@ -1,10 +1,9 @@
-! Xmman - Motif version of XmMan resource defaults
-!
-! Resource file for the xmman binary (class: XmMan)
+! Xmman - Motif manual page browser resource defaults (lowercase class name)
+! All UI text, translations, and render tables are hardcoded in C source.
+! This file only provides fallback resource values.
 
 *input:				True
-
-*topBox:			True
+*topBox:				True
 *topBox.Title:			XmMan
 *topBox.IconName:		XmMan
 
@@ -16,96 +15,8 @@
 *manualFontBold:		D2Coding:style=Bold
 *manualFontItalic:		D2Coding:style=Italic
 *manualFontSymbol:		D2Coding
-!*directoryFontNormal:		D2Coding
 *directoryFontNormal:		NanumMyeongjo
-!*directoryFontNormal:		Noto Serif CJK KR
 
 *horizPane*options.Label:	Options
 *horizPane*sections.Label:	Sections
-
-*helpButton.Label:		Help
-*quitButton.Label:		Quit
-*manpageButton.Label:		Manual Page
-
-*topLabel.Label:		Manual Browser
-
-*displayDirectory.Label:	Display Directory
-*displayManualPage.Label:	Display Manual Page
-*help.Label:			Help
-*help.geometry:			780x600
-*search.Label:			Search
-*removeThisManpage.Label:	Remove This Manpage
-*help*removeThisManpage.Label:	Remove Help
-*openNewManpage.Label:		Open New Manpage
-*showVersion.Label:		Show Version
-*quit.Label:			Quit
-
-*pleaseStandBy*Label:		Formatting Manual Page, Please Stand By...
-
-*search*dialog.Label:		Type string to search for:
-*search*apropos.Label:		Apropos
-*search*manualPage.Label:	Manual Page
-*search*cancel.Label:		Cancel
-
-*likeToSave*dialog.Label:	Would you like to save this formatted Manual Page?
-*likeToSave*yes.Label:		Yes
-*likeToSave*no.Label:		No
-
-! Keyboard shortcuts via translations
-*translations: 		#override \
-		Ctrl<Key>q: Quit() \n\
-		Ctrl<Key>c: Quit() \n\
-		Ctrl<Key>n: CreateNewManpage() \n\
-		Ctrl<Key>h: PopupHelp() \n\
-		Ctrl<Key>s: PopupSearch()
-
-*help*manualPage.translations:	#override \
-		Ctrl<Key>q: Quit() \n\
-		Ctrl<Key>c: Quit() \n\
-		Ctrl<Key>r: RemoveThisManpage() \n\
-		Ctrl<Key>n: CreateNewManpage() \n\
-		Ctrl<Key>h: PopupHelp() \n\
-		Ctrl<Key>d: GotoPage(Directory) \n\
-		Ctrl<Key>m: GotoPage(ManualPage) \n\
-		Ctrl<Key>v: ShowVersion() \n\
-		<Key>Prior: Page(Back) \n\
-		<Key>Next: Page(Forward)
-
-*manualBrowser*manualPage.translations:	#override \
-		Ctrl<Key>q: Quit() \n\
-		Ctrl<Key>c: Quit() \n\
-		Ctrl<Key>r: RemoveThisManpage() \n\
-		Ctrl<Key>n: CreateNewManpage() \n\
-		Ctrl<Key>h: PopupHelp() \n\
-		Ctrl<Key>d: GotoPage(Directory) \n\
-		Ctrl<Key>m: GotoPage(ManualPage) \n\
-		Ctrl<Key>v: ShowVersion() \n\
-		Ctrl<Key>s: PopupSearch() \n\
-		<Key>Prior: Page(Back) \n\
-		<Key>Next: Page(Forward)
-
-*manualBrowser*directory.translations:	#override \
-		Ctrl<Key>q: Quit() \n\
-		Ctrl<Key>c: Quit() \n\
-		Ctrl<Key>r: RemoveThisManpage() \n\
-		Ctrl<Key>n: CreateNewManpage() \n\
-		Ctrl<Key>h: PopupHelp() \n\
-		Ctrl<Key>d: GotoPage(Directory) \n\
-		Ctrl<Key>m: GotoPage(ManualPage) \n\
-		Ctrl<Key>v: ShowVersion() \n\
-		Ctrl<Key>s: PopupSearch()
-
-*topBox*search*manualPage.translations: 	#augment \
-		<Btn1Down>,<Btn1Up>: Search(Manpage, Open) reset()
-
-*topBox*search*apropos.translations:		#augment \
-		<Btn1Down>,<Btn1Up>: Search(Apropos, Open) reset()
-
-*topBox*search*cancel*translations:  		#augment \
-		<Btn1Down>,<Btn1Up>: Search(Cancel, Open) reset()
-
-*topBox*search*value*translations:		#override \
-		<Key>Return: Search(Manpage, Open) \n\
-		Ctrl<Key>m:  Search(Manpage, Open)
-
-! EOF.
+*topLabel.BorderWidth:		0
