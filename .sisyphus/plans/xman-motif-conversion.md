@@ -1284,7 +1284,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `ui: convert manpage widget to XmPanedWindow`
   - Files: `buttons.c`
 
-- [ ] 15. Convert directory list (viewport+list) to XmScrolledWindow+XmList
+- [x] 15. Convert directory list (viewport+list) to XmScrolledWindow+XmList
 
   **What to do**:
   - Rewrite `MakeDirectoryBox()` in `buttons.c`:

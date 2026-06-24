@@ -216,12 +216,12 @@ PutUpManpage(ManpageGlobals * man_globals, FILE * file)
 void
 DirectoryHandler(Widget w, XtPointer global_pointer, XtPointer ret_val)
 {
-    FILE *file;                 /* The manpage file. */
+    FILE *file;
     ManpageGlobals *man_globals = (ManpageGlobals *) global_pointer;
-    XawListReturnStruct *ret_struct = (XawListReturnStruct *) ret_val;
+    XmListCallbackStruct *cbs = (XmListCallbackStruct *) ret_val;
+    int index = cbs->item_position - 1;  /* XmList is 1-based */
 
-    file = FindManualFile(man_globals, man_globals->current_directory,
-                          ret_struct->list_index);
+    file = FindManualFile(man_globals, man_globals->current_directory, index);
     PutUpManpage(man_globals, file);
     if ((file != NULL) && (file != man_globals->curr_file)) {
         fclose(file);
@@ -264,7 +264,7 @@ DirPopupCallback(Widget w, XtPointer pointer, XtPointer junk)
         XtUnmanageChild(man_globals->manpagewidgets.box[current_box]);
         XtManageChild(man_globals->manpagewidgets.box[number]);
 
-        XawListUnhighlight(man_globals->manpagewidgets.box[current_box]);
+        XmListDeselectAllItems(man_globals->manpagewidgets.box[current_box]);
         ChangeLabel(man_globals->label, man_globals->section_name[number]);
         man_globals->current_directory = number;
     }

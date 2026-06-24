@@ -334,8 +334,8 @@ DoManualSearch(ManpageGlobals * man_globals, char *string)
  * Manual page found in some other section, unhighlight the current one.
  */
         if (man_globals->manpagewidgets.box != NULL)
-            XawListUnhighlight(man_globals->manpagewidgets.
-                               box[man_globals->current_directory]);
+            XmListDeselectAllItems(man_globals->manpagewidgets.
+                                box[man_globals->current_directory]);
     }
     else {
         /*
@@ -343,7 +343,7 @@ DoManualSearch(ManpageGlobals * man_globals, char *string)
          * listing currently being shown.
          */
         if (man_globals->manpagewidgets.box != NULL)
-            XawListHighlight(man_globals->manpagewidgets.box[i], e_num);
+            XmListSelectPos(man_globals->manpagewidgets.box[i], e_num + 1, True);
     }
     return (FindManualFile(man_globals, i, e_num));
 }

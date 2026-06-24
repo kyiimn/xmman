@@ -329,12 +329,11 @@ CreateManpageWidget(ManpageGlobals * man_globals,
     XmStringFree(label_str);
 
     if (full_instance) {
-        num_args = 0;
-        XtSetArg(arglist[num_args], XtNallowVert, TRUE);
-        num_args++;
+        n = 0;
+        XtSetArg(args[n], XmNscrollingPolicy, XmAUTOMATIC); n++;
 
-        mpw->directory = XtCreateWidget(DIRECTORY_NAME, viewportWidgetClass,
-                                         pane, arglist, num_args);
+        mpw->directory = XtCreateWidget(DIRECTORY_NAME, xmScrolledWindowWidgetClass,
+                                         pane, args, n);
 
         man_globals->current_directory = INITIAL_DIR;
         MakeDirectoryBox(man_globals, mpw->directory,
@@ -581,30 +580,6 @@ CreateSectionMenu(ManpageGlobals * man_globals, Widget parent)
     }
 }
 
-/*	Function Name: CreateList
- *	Description: this function prints a label in the directory list
- *	Arguments: section - the manual section.
- *	Returns: none
- */
-
-static char **
-CreateList(int section)
-{
-    char **ret_list, **current;
-    int count;
-
-    ret_list = (char **) XtMalloc((manual[section].nentries + 1) *
-                                  sizeof(char *));
-
-    for (current = ret_list, count = 0; count < manual[section].nentries;
-         count++, current++)
-        *current = CreateManpageName(manual[section].entries[count], section,
-                                     manual[section].flags);
-
-    *current = NULL;            /* NULL terminate the list. */
-    return (ret_list);
-}
-
 /*	Function Name: MakeDirectoryBox
  *	Description: make a directory box.
  *	Arguments: man_globals - the pseudo global structure for each manpage.
@@ -618,9 +593,12 @@ void
 MakeDirectoryBox(ManpageGlobals * man_globals, Widget parent, Widget * dir_disp,
                  int section)
 {
-    Arg arglist[10];
-    Cardinal num_args;
+    Widget list_w;
+    Arg args[8];
+    Cardinal n;
+    XmStringTable str_list;
     char *name, label_name[BUFSIZ];
+    int i;
 
     if (*dir_disp != NULL)      /* If we have one, don't make another. */
         return;
@@ -629,17 +607,34 @@ MakeDirectoryBox(ManpageGlobals * man_globals, Widget parent, Widget * dir_disp,
     snprintf(label_name, sizeof(label_name), "Directory of: %s", name);
     man_globals->section_name[section] = XtNewString(label_name);
 
-    num_args = 0;
-    XtSetArg(arglist[num_args], XtNlist, CreateList(section));
-    num_args++;
-    XtSetArg(arglist[num_args], XtNfont, resources.fonts.directory);
-    num_args++;
+    str_list = (XmStringTable) XtMalloc(
+        (manual[section].nentries + 1) * sizeof(XmString));
+    for (i = 0; i < manual[section].nentries; i++) {
+        str_list[i] = XmStringCreateLocalized(
+            CreateManpageName(manual[section].entries[i], section,
+                              manual[section].flags));
+    }
+    str_list[i] = NULL;
 
-    *dir_disp = XtCreateWidget(DIRECTORY_NAME, listWidgetClass, parent,
-                               arglist, num_args);
+    n = 0;
+    XtSetArg(args[n], XmNitems, str_list); n++;
+    XtSetArg(args[n], XmNitemCount, manual[section].nentries); n++;
+    XtSetArg(args[n], XmNvisibleItemCount, 10); n++;
+    XtSetArg(args[n], XmNselectionPolicy, XmBROWSE_SELECT); n++;
+    list_w = XtCreateManagedWidget("dirList", xmListWidgetClass,
+                                   parent, args, n);
 
-    XtAddCallback(*dir_disp, XtNcallback,
-                  DirectoryHandler, (caddr_t) man_globals);
+    for (i = 0; i < manual[section].nentries; i++) {
+        XmStringFree(str_list[i]);
+    }
+    XtFree((char *) str_list);
+
+    XtAddCallback(list_w, XmNdefaultActionCallback,
+                  DirectoryHandler, (XtPointer) man_globals);
+    XtAddCallback(list_w, XmNsingleSelectionCallback,
+                  DirectoryHandler, (XtPointer) man_globals);
+
+    *dir_disp = list_w;
 }
 
 /*	Function Name: MakeSaveWidgets.

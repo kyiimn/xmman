@@ -187,3 +187,40 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **`XmCreatePulldownMenu(parent, name, args, n)`**: This is the Motif convenience function replacing `XtCreatePopupShell(name, simpleMenuWidgetClass, parent, ...)`. The parent should be the shell widget (`mytop`), not the hpane.
 - **Pre-existing Xaw errors remain**: `viewportWidgetClass`, `listWidgetClass`, `labelWidgetClass` (in MakeSaveWidgets), `dialogWidgetClass`, `XawDialogAddButton`, `XtNdefaultDistance`, `XtNlist` — all in functions not part of this task.
 - **`XmStringCreateLocalized((String) option_names[i])`**: Cast to `(String)` needed because `option_names[i]` is `const char *` but `XmStringCreateLocalized` takes `char *`.
+
+## Task T13: Directory List Conversion (Xaw → XmList)
+
+### Changes Made
+
+- **buttons.c `MakeDirectoryBox()`**: Complete rewrite:
+  - Removed `CreateList()` function (was only called from old MakeDirectoryBox)
+  - `listWidgetClass` → `xmListWidgetClass` (as child of ScrolledWindow)
+  - `XtNlist` with `char**` → `XmNitems` with `XmStringTable` + `XmNitemCount`
+  - `XtNfont` removed (XmList uses XmString rendering)
+  - `XtNcallback` → `XmNdefaultActionCallback` + `XmNsingleSelectionCallback`
+  - XmStringTable items freed with `XmStringFree()` + `XtFree()` after widget creation
+  - `XmBROWSE_SELECT` selection policy for single-item selection
+  - Widget stored in `*dir_disp` (becomes `manpagewidgets.box[section]`) is the XmList itself
+  - Parent is `xmScrolledWindowWidgetClass` (already created in CreateManpageWidget)
+
+- **buttons.c `CreateManpageWidget()`**: 
+  - `viewportWidgetClass` → `xmScrolledWindowWidgetClass`
+  - `XtNallowVert, TRUE` → `XmNscrollingPolicy, XmAUTOMATIC`
+
+- **handler.c `DirectoryHandler()`**: 
+  - `XawListReturnStruct *ret_struct` → `XmListCallbackStruct *cbs`
+  - `ret_struct->list_index` → `cbs->item_position - 1` (1-based → 0-based)
+
+- **handler.c `DirPopupCallback()`**: 
+  - `XawListUnhighlight(box[current_box])` → `XmListDeselectAllItems(box[current_box])`
+
+- **search.c `DoManualSearch()`**: 
+  - `XawListUnhighlight(box[current_directory])` → `XmListDeselectAllItems(box[current_directory])`
+  - `XawListHighlight(box[i], e_num)` → `XmListSelectPos(box[i], e_num + 1, True)` (0-based → 1-based)
+
+### Key Findings
+- **XmList items must be freed after widget creation**: `XmNitems` copies the strings, so the XmStringTable must be freed with `XmStringFree()` per item + `XtFree()` for the table itself.
+- **XmList uses 1-based positions**: `item_position` is 1-based, while Xaw's `list_index` was 0-based. All callers must adjust with `-1` (reading) or `+1` (writing).
+- **ScrolledWindow with XmAUTOMATIC**: No need to create a separate scrollbar — XmScrolledWindow handles it automatically when `XmNscrollingPolicy` is set to `XmAUTOMATIC`.
+- **No need for `XmNfont` on XmList**: XmList uses XmString which carries its own font info.
+- **Pre-existing errors unchanged**: All compilation errors in buttons.c, handler.c, and search.c are pre-existing Xaw references in other functions (MakeSaveWidgets, FormUpWidgets, MakeSearchWidget, SearchString, ToggleBothShownState).
