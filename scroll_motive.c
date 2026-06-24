@@ -1110,9 +1110,42 @@ ScrollMotiveSetFile(Widget w, FILE *file)
 void
 ScrollMotiveScrollToLine(Widget w, int line)
 {
-    /* Stub — scrollbar callback integration in Task 7 */
-    (void) w;
-    (void) line;
+    ScrollMotiveWidget smw = (ScrollMotiveWidget) w;
+    int max_line;
+
+    if (line < 0)
+        line = 0;
+
+    max_line = smw->scroll.lines - smw->scroll.num_visible_lines;
+    if (max_line < 0)
+        max_line = 0;
+
+    if (line > max_line)
+        line = max_line;
+
+    smw->scroll.line_pointer = line;
+
+    if (smw->scroll.scrollbar != NULL) {
+        XmScrollBarSetValues(smw->scroll.scrollbar,
+                              smw->scroll.line_pointer,
+                              smw->scroll.num_visible_lines,
+                              1, smw->scroll.num_visible_lines,
+                              False);
+    }
+
+    if (XtIsRealized(w)) {
+        if (smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP && smw->scroll.render_ctx.draw != NULL) {
+            XftDrawRect(smw->scroll.render_ctx.draw, &smw->scroll.bg_color,
+                         0, 0, w->core.width, w->core.height);
+        }
+        _ScrollMotiveDrawLines(w, smw->scroll.line_pointer,
+                                smw->scroll.line_pointer + smw->scroll.num_visible_lines);
+        if (smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP) {
+            XCopyArea(XtDisplay(w), smw->scroll.back_pixmap, XtWindow(w),
+                      DefaultGC(XtDisplay(w), XScreenNumberOfScreen(XtScreen(w))),
+                      0, 0, w->core.width, w->core.height, 0, 0);
+        }
+    }
 }
 
 int

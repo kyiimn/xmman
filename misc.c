@@ -298,7 +298,7 @@ Xmkstemp (char *template)
 
     do {
         if (fd == -1)
-            strcpy(template, tmp);
+            strlcpy(template, tmp, PATH_MAX);
         if ((mktemp(template) == NULL) || (template[0] == '\0'))
             return -1;
         fd = open(template, O_RDWR | O_CREAT | O_EXCL, 0600);
@@ -378,7 +378,7 @@ UncompressNamed(ManpageGlobals * man_globals, const char *filename,
         PopupWarning(man_globals, "Error opening temp file");
         return FALSE;
     }
-    strcpy(output, tmp);
+    strlcpy(output, tmp, BUFSIZ);
 
 #ifdef GZIP_EXTENSION
     if (streq(filename + strlen(filename) - strlen(GZIP_EXTENSION),
@@ -453,7 +453,7 @@ SgmlToRoffNamed(ManpageGlobals * man_globals, char *filename, char *output,
         PopupWarning(man_globals, "Error opening temp file");
         return FALSE;
     }
-    strcpy(output, tmp);
+    strlcpy(output, tmp, BUFSIZ);
 
     snprintf(cmdbuf, sizeof(cmdbuf), "%s %s >> %s", SFORMAT, filename, output);
     if (system(cmdbuf) == 0)    /* execute search. */
@@ -1104,7 +1104,7 @@ ParseEntry(const char *entry, char *path, char *sect, char *page)
         PrintError("Failed to find / in ParseEntry.");
     *c++ = '\0';
     if (page != NULL)
-        strcpy(page, c);
+        strlcpy(page, c, BUFSIZ);
 
     c = strrchr(temp, '/');
     if (c == NULL)
@@ -1129,10 +1129,10 @@ ParseEntry(const char *entry, char *path, char *sect, char *page)
     }
 #endif
     if (sect != NULL)
-        strcpy(sect, c);
+        strlcpy(sect, c, BUFSIZ);
 
     if (path != NULL)
-        strcpy(path, temp);
+        strlcpy(path, temp, BUFSIZ);
 }
 
 /*      Function Name: GetGlobals
