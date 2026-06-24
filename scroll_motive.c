@@ -275,21 +275,25 @@ VerticalScroll(Widget w, XtPointer client_data, XtPointer call_data)
 
     if (smw->scroll.scrollbar != NULL) {
         XmScrollBarSetValues(smw->scroll.scrollbar,
-                             smw->scroll.line_pointer,
-                             smw->scroll.num_visible_lines,
-                             1, smw->scroll.num_visible_lines,
-                             False);
+                              smw->scroll.line_pointer,
+                              smw->scroll.num_visible_lines,
+                              1, smw->scroll.num_visible_lines,
+                              False);
     }
 
-    XClearArea(XtDisplay((Widget) smw), XtWindow((Widget) smw),
-               0, 0,
-               ((Widget) smw)->core.width,
-               ((Widget) smw)->core.height,
-               False);
+    if (smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP && smw->scroll.render_ctx.draw != NULL) {
+        XftDrawRect(smw->scroll.render_ctx.draw, &smw->scroll.bg_color,
+                     0, 0, ((Widget)smw)->core.width, ((Widget)smw)->core.height);
+    }
     _ScrollMotiveDrawLines((Widget) smw,
-                           smw->scroll.line_pointer,
-                           smw->scroll.line_pointer +
-                           smw->scroll.num_visible_lines);
+                            smw->scroll.line_pointer,
+                            smw->scroll.line_pointer +
+                            smw->scroll.num_visible_lines);
+    if (smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP) {
+        XCopyArea(XtDisplay((Widget) smw), smw->scroll.back_pixmap, XtWindow((Widget) smw),
+                  DefaultGC(XtDisplay((Widget) smw), XScreenNumberOfScreen(XtScreen((Widget) smw))),
+                  0, 0, ((Widget)smw)->core.width, ((Widget)smw)->core.height, 0, 0);
+    }
 }
 
 /****************************************************************
@@ -320,15 +324,19 @@ VerticalJump(Widget w, XtPointer client_data, XtPointer call_data)
     else if (smw->scroll.line_pointer > max_line)
         smw->scroll.line_pointer = max_line;
 
-    XClearArea(XtDisplay((Widget) smw), XtWindow((Widget) smw),
-               0, 0,
-               ((Widget) smw)->core.width,
-               ((Widget) smw)->core.height,
-               False);
+    if (smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP && smw->scroll.render_ctx.draw != NULL) {
+        XftDrawRect(smw->scroll.render_ctx.draw, &smw->scroll.bg_color,
+                     0, 0, ((Widget)smw)->core.width, ((Widget)smw)->core.height);
+    }
     _ScrollMotiveDrawLines((Widget) smw,
-                           smw->scroll.line_pointer,
-                           smw->scroll.line_pointer +
-                           smw->scroll.num_visible_lines);
+                            smw->scroll.line_pointer,
+                            smw->scroll.line_pointer +
+                            smw->scroll.num_visible_lines);
+    if (smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP) {
+        XCopyArea(XtDisplay((Widget) smw), smw->scroll.back_pixmap, XtWindow((Widget) smw),
+                  DefaultGC(XtDisplay((Widget) smw), XScreenNumberOfScreen(XtScreen((Widget) smw))),
+                  0, 0, ((Widget)smw)->core.width, ((Widget)smw)->core.height, 0, 0);
+    }
 }
 
 /****************************************************************
@@ -365,6 +373,12 @@ _ScrollMotiveRealize(Widget w, XtValueMask *mask,
     smw->scroll.render_ctx.draw = XftDrawCreate(
         dpy, XtWindow(w),
         smw->scroll.visual, smw->scroll.colormap);
+
+    if (smw->scroll.render_ctx.draw == NULL) {
+        XtAppError(XtWidgetToApplicationContext(w),
+                   "xman: Failed to create Xft drawing context.\n");
+        return;
+    }
 
     /*
      * Allocate Xft colors from the widget's foreground/background
@@ -415,6 +429,11 @@ _ScrollMotiveRealize(Widget w, XtValueMask *mask,
         dpy, XtWindow(w),
         w->core.width, w->core.height,
         w->core.depth);
+
+    /* Bind XftDraw to back_pixmap for double-buffered rendering */
+    if (smw->scroll.render_ctx.draw != NULL && smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP) {
+        XftDrawChange(smw->scroll.render_ctx.draw, smw->scroll.back_pixmap);
+    }
 
     smw->scroll.draw_width = w->core.width;
     smw->scroll.draw_height = w->core.height;
@@ -495,27 +514,25 @@ _ScrollMotiveExpose(Widget w, XEvent *event, Region region)
     if (smw->scroll.top_line == NULL || smw->scroll.fonts == NULL)
         return;
 
-    /*
-     * Clear the damaged area first to prevent anti-aliased ghosting.
-     * When switching fonts (normal→bold→italic), leftover anti-aliased
-     * pixels from the previous font can leave visual artifacts if we
-     * don't clear before drawing.
-     */
-    if (event != NULL && (event->type == Expose || event->type == GraphicsExpose)) {
-        XClearArea(XtDisplay(w), XtWindow(w),
-                    event->xexpose.x, event->xexpose.y,
-                    event->xexpose.width, event->xexpose.height,
-                    False);
-    } else {
-        /* Full redraw */
-        XClearArea(XtDisplay(w), XtWindow(w),
-                    0, 0, w->core.width, w->core.height, False);
-    }
+    if (smw->scroll.back_pixmap == XmUNSPECIFIED_PIXMAP)
+        return;
 
-    /* Draw visible lines */
+    /*
+     * Clear the back buffer before drawing to prevent
+     * anti-aliased ghosting from previous content.
+     */
+    XftDrawRect(smw->scroll.render_ctx.draw, &smw->scroll.bg_color,
+                 0, 0, w->core.width, w->core.height);
+
+    /* Draw visible lines into back buffer */
     _ScrollMotiveDrawLines(w, smw->scroll.line_pointer,
                             smw->scroll.line_pointer +
                             smw->scroll.num_visible_lines);
+
+    /* Blit back buffer to window */
+    XCopyArea(XtDisplay(w), smw->scroll.back_pixmap, XtWindow(w),
+              DefaultGC(XtDisplay(w), XScreenNumberOfScreen(XtScreen(w))),
+              0, 0, w->core.width, w->core.height, 0, 0);
 }
 
 /****************************************************************
@@ -542,6 +559,11 @@ _ScrollMotiveResize(Widget w)
         w->core.width, w->core.height,
         w->core.depth);
 
+    /* Rebind XftDraw to the new back_pixmap */
+    if (smw->scroll.render_ctx.draw != NULL && smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP) {
+        XftDrawChange(smw->scroll.render_ctx.draw, smw->scroll.back_pixmap);
+    }
+
     /* Recalculate number of visible lines */
     if (smw->scroll.font_height > 0) {
         smw->scroll.num_visible_lines =
@@ -554,10 +576,6 @@ _ScrollMotiveResize(Widget w)
     }
     smw->scroll.draw_width = w->core.width - scrollbar_width;
     smw->scroll.draw_height = w->core.height;
-
-    if (smw->scroll.render_ctx.draw != NULL) {
-        XftChangeDrawable(&smw->scroll.render_ctx, XtWindow(w));
-    }
 
     if (smw->scroll.scrollbar != NULL) {
         int slider_size = (smw->scroll.lines > 0 && smw->scroll.font_height > 0)
@@ -839,6 +857,8 @@ _ScrollMotiveRenderSegment(Widget w, TextSegment *seg,
 
     if (font == NULL)
         font = smw->scroll.fonts->normal;
+    if (font == NULL)
+        return;
 
     font_height = XftGetFontHeight(font);
     font_ascent = XftGetFontAscent(font);
@@ -1072,11 +1092,15 @@ ScrollMotiveSetFile(Widget w, FILE *file)
 
     if (smw->scroll.scrollbar != NULL && smw->scroll.num_visible_lines > 0) {
         XmScrollBarSetValues(smw->scroll.scrollbar, 0,
-                             smw->scroll.num_visible_lines, 1, 1,
-                             XmMAX_ON_BOTTOM);
+                              smw->scroll.num_visible_lines, 1, 1,
+                              False);
     }
 
     if (XtIsRealized(w)) {
+        if (smw->scroll.back_pixmap != XmUNSPECIFIED_PIXMAP && smw->scroll.render_ctx.draw != NULL) {
+            XftDrawRect(smw->scroll.render_ctx.draw, &smw->scroll.bg_color,
+                         0, 0, w->core.width, w->core.height);
+        }
         XClearArea(XtDisplay(w), XtWindow(w), 0, 0,
                    smw->core.width, smw->core.height, False);
     }

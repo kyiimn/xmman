@@ -541,6 +541,9 @@ RemoveThisManpage(Widget w, XEvent * event, String * params,
         RemoveGlobals(man_globals->This_Manpage);
         XtDestroyWidget(man_globals->This_Manpage);
 
+        for (int i = 0; i < sections; i++) {
+            XtFree(man_globals->section_name[i]);
+        }
         XtFree((char *) man_globals->section_name);
         XtFree((char *) man_globals->manpagewidgets.box);
         XtFree((char *) man_globals);

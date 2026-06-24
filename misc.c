@@ -151,10 +151,8 @@ PrintError(const char *string)
 void
 OpenFile(ManpageGlobals * man_globals, FILE * file)
 {
-    if (man_globals->curr_file) {
-#if 0                           /* Ownership rules need to be fixed first */
+    if (man_globals->curr_file != NULL) {
         fclose(man_globals->curr_file);
-#endif
     }
     man_globals->curr_file = file;
 
@@ -1070,7 +1068,7 @@ PositionCenter(Widget widget, int x, int y, int above, int left, int v_space,
  */
 
     if (x_temp < h_space)
-        x_temp = v_space;
+        x_temp = h_space;
     if (y_temp < v_space)
         (y_temp = 2);
 

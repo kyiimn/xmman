@@ -12,13 +12,13 @@
 *manualBrowser.IconName:	Manual Page
 *manualBrowser.geometry:	780x600
 
-*manualFontBold:		-*-courier-bold-r-*-*-*-120-*-*-*-*-*-*
-*manualFontItalic:		-*-courier-medium-o-*-*-*-120-*-*-*-*-*-*
-*manualFontNormal:		-*-courier-medium-r-*-*-*-120-*-*-*-*-*-*
-*manualFontSymbol:		-*-symbol-*-*-*-*-*-120-*-*-*-*-*-*
-!*directoryFontNormal:		-*-courier-medium-r-*-*-*-120-*-*-*-*-*-*
-*directoryFontNormal:		-*-helvetica-medium-r-*-*-*-120-*-*-*-*-*-*
-!*directoryFontNormal:		-*-lucida-bold-r-*-*-*-120-*-*-*-*-*-*
+*manualFontNormal:		D2Coding
+*manualFontBold:		D2Coding:style=Bold
+*manualFontItalic:		D2Coding:style=Italic
+*manualFontSymbol:		D2Coding
+!*directoryFontNormal:		D2Coding
+*directoryFontNormal:		NanumMyeongjo
+!*directoryFontNormal:		Noto Serif CJK KR
 
 *horizPane*options.Label:	Options
 *horizPane*sections.Label:	Sections

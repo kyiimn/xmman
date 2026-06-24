@@ -349,6 +349,12 @@ CreateManpageWidget(ManpageGlobals * man_globals,
         ScrollMotiveWidget smw = (ScrollMotiveWidget) mpw->manpage;
         smw->scroll.fonts = XmanLoadManpageFonts(XtDisplay(mpw->manpage),
                                                   XScreenNumberOfScreen(XtScreen(mpw->manpage)));
+        if (smw->scroll.fonts == NULL) {
+            XtAppError(XtWidgetToApplicationContext(mpw->manpage),
+                       "xman: Failed to load manpage fonts. "
+                       "Install D2Coding or a fixed font.\n");
+            return;
+        }
         smw->scroll.font_height = XftGetFontHeight(smw->scroll.fonts->normal);
         smw->scroll.h_width = XftGetFontWidth(smw->scroll.fonts->normal);
     }
