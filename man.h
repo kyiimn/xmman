@@ -81,6 +81,10 @@ from the X Consortium.
 
 #include "xft_utils.h"
 
+/* Font configuration and fallback system. */
+
+#include "xman_fonts.h"
+
 /* program specific header files. */
 
 #include "scroll_motive.h"
@@ -207,6 +211,11 @@ typedef struct _Xman_Resources {
     char *help_file;            /* The name of the help file. */
     char *title;                /* The title for topBox */
     Boolean iconic;             /* Should topBox come up in an iconic state */
+    char *manpage_font_normal;
+    char *manpage_font_bold;
+    char *manpage_font_italic;
+    char *manpage_font_symbol;
+    char *directory_font_normal;
 } Xman_Resources;
 
 /************************************************************

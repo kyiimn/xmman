@@ -43,3 +43,19 @@
 - **CJK fallback chains hardcoded in `XftLoadFontSet`**: Monospace chain for body, with style variants for bold/italic.
 - Clean compile with `gcc -c -I. -Wall -Wextra -pedantic xft_utils.c $(pkg-config --cflags xft fontconfig)` — zero warnings.
 - LSP clangd errors about `ft2build.h not found` are false positives from clangd not finding FreeType includes (gcc compiles fine).
+
+## xman_fonts Subsystem (Task 4b)
+
+### Key Decisions
+- **Forward declaration for XmanFonts**: xman_fonts.h uses `struct _XmanFonts;` forward declaration instead of including man.h, avoiding circular dependency. xman_fonts.c includes man.h for the full type definition.
+- **scroll_motive.h stub**: Created minimal stub header so man.h can compile before the full ScrollMotive widget implementation. Just declares WidgetClass and widget type pointers.
+- **XftFontBuildPattern uses fontconfig FC_WEIGHT_BOLD/FC_SLANT_ITALIC constants**: These are from `<fontconfig/fontconfig.h>`, already available via xft dependency.
+- **XtResource names for new font patterns**: Used "FontPattern" as the resource class (not XtCFont which is for XFontStruct). Kept old "directoryFontNormal" XtRFontStruct resource as-is (for backward compat) and added new "directoryFontPattern" XtRString resource.
+- **XmanFreeFonts doesn't free the struct itself**: Because XmanFonts is embedded in Xman_Resources, not heap-allocated separately.
+
+### File Changes
+- **xman_fonts.h** (new): Font constant defines, XftFontBuildPattern/XmanLoadManpageFonts/XmanLoadDirectoryFont/XmanFreeFonts prototypes
+- **xman_fonts.c** (new): Implementation of all 4 functions, uses XftLoadFontSet and XftFontOpenWithFallback from xft_utils
+- **man.h**: Added `#include "xman_fonts.h"`, added 5 `char *` font pattern fields to Xman_Resources
+- **main.c**: Added `#include "xman_fonts.h"`, added 5 new XtResource entries for font patterns
+- **scroll_motive.h** (new stub): Minimal header to unblock compilation until Task 5-10

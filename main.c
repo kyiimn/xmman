@@ -35,6 +35,7 @@ from the X Consortium.
  */
 
 #include "globals.h"
+#include "xman_fonts.h"
 #ifndef ZERO
 #include <X11/Xaw/Cardinals.h>
 #endif /* ZERO */
@@ -47,6 +48,16 @@ static void AdjustDefResources(void);
 static XtResource my_resources[] = {
     {"directoryFontNormal", XtCFont, XtRFontStruct, sizeof(XFontStruct *),
      Offset(fonts.directory), XtRString, DIRECTORY_NORMAL},
+    {"manpageFontNormal", "FontPattern", XtRString, sizeof(char *),
+     Offset(manpage_font_normal), XtRString, XMAN_MANPAGE_FONT},
+    {"manpageFontBold", "FontPattern", XtRString, sizeof(char *),
+     Offset(manpage_font_bold), XtRString, XMAN_MANPAGE_FONT},
+    {"manpageFontItalic", "FontPattern", XtRString, sizeof(char *),
+     Offset(manpage_font_italic), XtRString, XMAN_MANPAGE_FONT},
+    {"manpageFontSymbol", "FontPattern", XtRString, sizeof(char *),
+     Offset(manpage_font_symbol), XtRString, XMAN_MANPAGE_FONT},
+    {"directoryFontPattern", "FontPattern", XtRString, sizeof(char *),
+     Offset(directory_font_normal), XtRString, XMAN_UI_FONT},
     {"bothShown", XtCBoolean, XtRBoolean, sizeof(Boolean),
      Offset(both_shown_initial), XtRString, "False"},
     {"directoryHeight", "DirectoryHeight", XtRInt, sizeof(int),
