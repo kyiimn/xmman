@@ -1,8 +1,8 @@
 /*
- * scroll_motive.h — ScrollMotive widget public interface (stub)
+ * scroll_motive.h — ScrollMotive widget public interface
  *
- * This is a minimal stub header that allows compilation of other modules
- * before the full ScrollMotive widget implementation is complete.
+ * XmDrawingArea-based man page renderer using Xft for anti-aliased
+ * text. Replaces the old ScrollByLine Xaw widget.
  *
  * Copyright (c) 2026 xman Motif/Xft conversion project
  *
@@ -17,13 +17,32 @@
 #define _XtScrollMotive_h
 
 #include <X11/Intrinsic.h>
+#include <X11/Xfuncproto.h>
+#include <stdio.h>
 
-#define XtNscrollMotiveFontSet    "scrollMotiveFontSet"
-#define XtNscrollMotiveDirFont    "scrollMotiveDirFont"
+/***********************************************************************
+ *
+ * ScrollMotive Widget (subclass of XmDrawingArea)
+ *
+ ***********************************************************************/
 
+/* Resource names */
+#define XtNmanFontSet       "manFontSet"         /* XmanFontSet * */
+#define XtNmanPageFile      "manPageFile"         /* FILE * */
+#define XtNmanIndent        "manIndent"           /* Dimension */
+#define XtNmanForceVert     "manForceVert"        /* Boolean */
+
+/* Class record pointer */
 extern WidgetClass scrollMotiveWidgetClass;
 
+/* Type declarations */
 typedef struct _ScrollMotiveClassRec *ScrollMotiveWidgetClass;
 typedef struct _ScrollMotiveRec      *ScrollMotiveWidget;
+
+/* Public API */
+extern void ScrollMotiveSetFile(Widget w, FILE *file);
+extern void ScrollMotiveScrollToLine(Widget w, int line);
+extern int  ScrollMotiveGetTotalLines(Widget w);
+extern int  ScrollMotiveGetVisibleLines(Widget w);
 
 #endif /* _XtScrollMotive_h */

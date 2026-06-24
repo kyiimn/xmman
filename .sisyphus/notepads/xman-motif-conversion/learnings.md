@@ -59,3 +59,17 @@
 - **man.h**: Added `#include "xman_fonts.h"`, added 5 `char *` font pattern fields to Xman_Resources
 - **main.c**: Added `#include "xman_fonts.h"`, added 5 new XtResource entries for font patterns
 - **scroll_motive.h** (new stub): Minimal header to unblock compilation until Task 5-10
+
+## Task T5: scroll_motive.h and scroll_motiveP.h headers
+
+### Key Findings
+- `scroll_motive.h` needed `#include <stdio.h>` for `FILE *` in `ScrollMotiveSetFile` prototype — `X11/Intrinsic.h` does not pull it in
+- `scroll_motiveP.h` must include `<Xm/XmP.h>` and `<Xm/DrawingAP.h>` (not just `<Xm/Xm.h>` and `<Xm/DrawingA.h>`) to get `CoreClassPart`, `CorePart`, `XmDrawingAreaClassPart`, `XmDrawingAreaPart`
+- XmDrawingArea class hierarchy: Core → Composite → Constraint → XmManager → XmDrawingArea, so instance record has 5 parts: CorePart, CompositePart, ConstraintPart, XmManagerPart, XmDrawingAreaPart
+- Xft headers require freetype2 include path (`-I/usr/include/freetype2`) for `ft2build.h`
+- Resource names use `XtNman*` prefix (not `XtNscrollMotive*`) to match original ScrollByLine naming convention where resource names refer to the content, not the widget
+
+### Compilation flags for headers with Xft+Motif
+```
+gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/freetype2 -I/usr/include/libpng16
+```

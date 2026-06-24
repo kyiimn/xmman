@@ -576,7 +576,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `feat: add font configuration and fallback system`
   - Files: `xman_fonts.c`, `xman_fonts.h`, `man.h`, `main.c`
 
-- [ ] 5. Create ScrollMotive data structures and header (scroll_motive.h)
+- [x] 5. Create ScrollMotive data structures and header (scroll_motive.h)
 
   **What to do**:
   - Create `scroll_motive.h`: Public API for the Motif-based man page display widget
