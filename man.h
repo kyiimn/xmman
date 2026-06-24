@@ -160,6 +160,7 @@ typedef struct _ManpageGlobals {
      search_widget,             /* The search widget popup. */
      help_button,               /* The help button. */
      option_menu,               /* The option menu. */
+     section_menu,              /* The section menu. */
      text_widget;               /* text widget containing search string. */
 
     /* Widgets (Objects really) for the command menu entries. */

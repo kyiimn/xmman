@@ -1093,7 +1093,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `ui: convert TopBox to XmForm/XmLabel/XmPushButton`
   - Files: `buttons.c`
 
-- [ ] 12. Convert option menu to XmMenuBar + XmCascadeButton
+- [x] 12. Convert option menu to XmMenuBar + XmCascadeButton
 
   **What to do**:
   - Rewrite `CreateOptionMenu()` in `buttons.c`:
@@ -1159,7 +1159,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `ui: convert option menu to XmMenuBar + XmCascadeButton`
   - Files: `buttons.c`
 
-- [ ] 13. Convert section menu to XmPulldownMenu
+- [x] 13. Convert section menu to XmPulldownMenu
 
   **What to do**:
   - Rewrite `CreateSectionMenu()` in `buttons.c`:

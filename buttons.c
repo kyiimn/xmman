@@ -238,9 +238,12 @@ void
 CreateManpageWidget(ManpageGlobals * man_globals,
                     String name, Boolean full_instance)
 {
-    Arg arglist[MANPAGEARGS];   /* An argument list for widget creation */
-    Cardinal num_args;          /* The number of arguments in the list. */
-    Widget mytop, pane, hpane, mysections;      /* Widgets */
+    Arg arglist[MANPAGEARGS];
+    Cardinal num_args;
+    Widget mytop, pane, hpane, mysections = NULL;
+    XmString label_str;
+    Arg args[4];
+    Cardinal n;
     ManPageWidgets *mpw = &(man_globals->manpagewidgets);
 
     num_args = (Cardinal) 0;
@@ -252,7 +255,7 @@ CreateManpageWidget(ManpageGlobals * man_globals,
     mytop = XtCreatePopupShell(name, topLevelShellWidgetClass, initial_widget,
                                arglist, num_args);
 
-    man_globals->This_Manpage = mytop;  /* pointer to root widget of Manualpage. */
+    man_globals->This_Manpage = mytop;
     num_args = 0;
     if (full_instance)
         XtSetArg(arglist[num_args], XtNiconPixmap,
@@ -267,37 +270,49 @@ CreateManpageWidget(ManpageGlobals * man_globals,
     num_args++;
     XtSetValues(mytop, arglist, num_args);
 
-    pane = XtCreateManagedWidget("vertPane", panedWidgetClass, mytop, NULL,
-                                 (Cardinal) 0);
+    pane = XtCreateManagedWidget("vertPane", xmPanedWindowWidgetClass, mytop,
+                                 NULL, (Cardinal) 0);
 
-/* Create menu bar. */
-
-    hpane = XtCreateManagedWidget("horizPane", panedWidgetClass,
+    hpane = XtCreateManagedWidget("horizPane", xmPanedWindowWidgetClass,
                                   pane, NULL, (Cardinal) 0);
-    num_args = 0;
-    XtSetArg(arglist[num_args], XtNmenuName, OPTION_MENU);
-    num_args++;
-    (void) XtCreateManagedWidget("options", menuButtonWidgetClass,
-                                 hpane, arglist, num_args);
 
     CreateOptionMenu(man_globals, mytop);
 
-    num_args = 0;
-    XtSetArg(arglist[num_args], XtNmenuName, SECTION_MENU);
-    num_args++;
-    mysections = XtCreateManagedWidget("sections", menuButtonWidgetClass,
-                                       hpane, arglist, num_args);
+    n = 0;
+    XtSetArg(args[n], XmNsubMenuId, man_globals->option_menu); n++;
+    label_str = XmStringCreateLocalized("Options");
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    (void) XtCreateManagedWidget("options", xmCascadeButtonWidgetClass,
+                                 hpane, args, n);
+    XmStringFree(label_str);
 
-    XtSetArg(arglist[0], XtNlabel, SHOW_BOTH);
-    XtSetValues(man_globals->both_screens_entry, arglist, (Cardinal) 1);
+    if (full_instance) {
+        CreateSectionMenu(man_globals, mytop);
+        n = 0;
+        XtSetArg(args[n], XmNsubMenuId, man_globals->section_menu); n++;
+        label_str = XmStringCreateLocalized("Sections");
+        XtSetArg(args[n], XmNlabelString, label_str); n++;
+        mysections = XtCreateManagedWidget("sections", xmCascadeButtonWidgetClass,
+                                           hpane, args, n);
+        XmStringFree(label_str);
+    }
+    else {
+        mysections = XtCreateManagedWidget("sections", xmCascadeButtonWidgetClass,
+                                            hpane, NULL, (Cardinal) 0);
+        XtSetSensitive(mysections, FALSE);
+    }
+
+    label_str = XmStringCreateLocalized(SHOW_BOTH);
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    XtSetValues(man_globals->both_screens_entry, args, n);
+    XmStringFree(label_str);
 
     if (full_instance) {
         MakeSearchWidget(man_globals, mytop);
-        CreateSectionMenu(man_globals, mytop);
         MakeSaveWidgets(man_globals, mytop);
     }
     else {
-        XtSetSensitive(mysections, FALSE);
         XtSetArg(arglist[0], XtNsensitive, FALSE);
         XtSetValues(man_globals->dir_entry, arglist, ONE);
         XtSetValues(man_globals->manpage_entry, arglist, ONE);
@@ -306,11 +321,12 @@ CreateManpageWidget(ManpageGlobals * man_globals,
         XtSetValues(man_globals->both_screens_entry, arglist, ONE);
     }
 
-
-    man_globals->label = XtCreateManagedWidget("manualTitle", labelWidgetClass,
-                                               hpane, NULL, (Cardinal) 0);
-
-/* Create Directory */
+    label_str = XmStringCreateLocalized("manualTitle");
+    n = 0;
+    XtSetArg(args[n], XmNlabelString, label_str); n++;
+    man_globals->label = XtCreateManagedWidget("manualTitle", xmLabelWidgetClass,
+                                               hpane, args, n);
+    XmStringFree(label_str);
 
     if (full_instance) {
         num_args = 0;
@@ -318,7 +334,7 @@ CreateManpageWidget(ManpageGlobals * man_globals,
         num_args++;
 
         mpw->directory = XtCreateWidget(DIRECTORY_NAME, viewportWidgetClass,
-                                        pane, arglist, num_args);
+                                         pane, arglist, num_args);
 
         man_globals->current_directory = INITIAL_DIR;
         MakeDirectoryBox(man_globals, mpw->directory,
@@ -327,12 +343,9 @@ CreateManpageWidget(ManpageGlobals * man_globals,
         XtManageChild(mpw->box[man_globals->current_directory]);
     }
 
-/* Create Manpage */
-
     mpw->manpage = XtCreateWidget(MANUALPAGE, scrollMotiveWidgetClass,
-                                   pane, NULL, (Cardinal) 0);
+                                    pane, NULL, (Cardinal) 0);
 
-/* Load Xft fonts for man page rendering */
     {
         ScrollMotiveWidget smw = (ScrollMotiveWidget) mpw->manpage;
         smw->scroll.fonts = XmanLoadManpageFonts(XtDisplay(mpw->manpage),
@@ -340,7 +353,6 @@ CreateManpageWidget(ManpageGlobals * man_globals,
         smw->scroll.font_height = XftGetFontHeight(smw->scroll.fonts->normal);
         smw->scroll.h_width = XftGetFontWidth(smw->scroll.fonts->normal);
     }
-
 }
 
 /*	Function Name: StartManpage
@@ -372,7 +384,7 @@ StartManpage(ManpageGlobals * man_globals, Boolean help, Boolean page)
             XtManageChild(dir);
             man_globals->dir_shown = TRUE;
 
-            XtSetArg(arglist[0], XtNpreferredPaneSize,
+            XtSetArg(arglist[0], XmNpreferredPaneSize,
                      resources.directory_height);
             XtSetValues(dir, arglist, (Cardinal) 1);
 
@@ -380,8 +392,12 @@ StartManpage(ManpageGlobals * man_globals, Boolean help, Boolean page)
             XtSetValues(man_globals->manpage_entry, arglist, ONE);
             XtSetValues(man_globals->dir_entry, arglist, ONE);
 
-            XtSetArg(arglist[0], XtNlabel, SHOW_ONE);
-            XtSetValues(man_globals->both_screens_entry, arglist, ONE);
+            {
+                XmString str = XmStringCreateLocalized(SHOW_ONE);
+                XtSetArg(arglist[0], XmNlabelString, str);
+                XtSetValues(man_globals->both_screens_entry, arglist, ONE);
+                XmStringFree(str);
+            }
             ChangeLabel(label,
                         man_globals->section_name[man_globals->
                                                   current_directory]);
@@ -463,7 +479,10 @@ CreateOptionMenu(ManpageGlobals * man_globals, Widget parent)
 {
     Widget menu, entry;
     int i;
-    static const char *option_names[] = {     /* Names of the buttons. */
+    XmString label_str;
+    Arg args[4];
+    Cardinal n;
+    static const char *option_names[] = {
         DIRECTORY,
         MANPAGE,
         HELP,
@@ -475,15 +494,18 @@ CreateOptionMenu(ManpageGlobals * man_globals, Widget parent)
         QUIT
     };
 
-    menu = XtCreatePopupShell(OPTION_MENU, simpleMenuWidgetClass, parent,
-                              NULL, (Cardinal) 0);
+    menu = XmCreatePulldownMenu(parent, OPTION_MENU, NULL, (Cardinal) 0);
     man_globals->option_menu = menu;
 
     for (i = 0; i < NUM_OPTIONS; i++) {
-        entry = XtCreateManagedWidget(option_names[i], smeBSBObjectClass,
-                                      menu, NULL, ZERO);
-        XtAddCallback(entry, XtNcallback, OptionCallback,
-                      (caddr_t) man_globals);
+        label_str = XmStringCreateLocalized((String) option_names[i]);
+        n = 0;
+        XtSetArg(args[n], XmNlabelString, label_str); n++;
+        entry = XtCreateManagedWidget(option_names[i], xmPushButtonWidgetClass,
+                                      menu, args, n);
+        XmStringFree(label_str);
+        XtAddCallback(entry, XmNactivateCallback, OptionCallback,
+                      (XtPointer) man_globals);
         switch (i) {
         case 0:
             man_globals->dir_entry = entry;
@@ -517,7 +539,6 @@ CreateOptionMenu(ManpageGlobals * man_globals, Widget parent)
             break;
         }
     }
-
 }
 
 /*      Function Name: CreateSectionMenu
@@ -533,29 +554,30 @@ CreateSectionMenu(ManpageGlobals * man_globals, Widget parent)
     Widget menu, entry;
     int i;
     MenuStruct *menu_struct;
-    Arg args[1];
-    Cardinal num_args;
+    Arg args[2];
+    Cardinal n;
+    XmString label_str;
     char entry_name[BUFSIZ];
 
-    menu = XtCreatePopupShell(SECTION_MENU, simpleMenuWidgetClass, parent,
-                              NULL, (Cardinal) 0);
+    menu = XmCreatePulldownMenu(parent, SECTION_MENU, NULL, (Cardinal) 0);
+    man_globals->section_menu = menu;
 
     for (i = 0; i < sections; i++) {
-        num_args = 0;
-        XtSetArg(args[num_args], XtNlabel, manual[i].blabel);
-        num_args++;
+        label_str = XmStringCreateLocalized(manual[i].blabel);
+        n = 0;
+        XtSetArg(args[n], XmNlabelString, label_str); n++;
         snprintf(entry_name, sizeof(entry_name), "section%d", i);
 
-        entry = XtCreateManagedWidget(entry_name, smeBSBObjectClass,
-                                      menu, args, num_args);
+        entry = XtCreateManagedWidget(entry_name, xmPushButtonWidgetClass,
+                                       menu, args, n);
+        XmStringFree(label_str);
         menu_struct = (MenuStruct *) XtMalloc(sizeof(MenuStruct));
         menu_struct->data = (caddr_t) man_globals;
         menu_struct->number = i;
-        XtAddCallback(entry, XtNcallback, DirPopupCallback,
+        XtAddCallback(entry, XmNactivateCallback, DirPopupCallback,
                       (caddr_t) menu_struct);
         XtAddCallback(entry, XtNdestroyCallback, MenuDestroy,
                       (caddr_t) menu_struct);
-
     }
 }
 

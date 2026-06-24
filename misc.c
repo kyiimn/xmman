@@ -1010,18 +1010,16 @@ AddCursor(Widget w, Cursor cursor)
 void
 ChangeLabel(Widget w, const char *str)
 {
-    Arg arglist[3];             /* An argument list. */
+    Arg arglist[1];
+    XmString label_str;
 
     if (w == NULL)
         return;
 
-    XtSetArg(arglist[0], XtNlabel, str);
-
-/* shouldn't really have to do this. */
-    XtSetArg(arglist[1], XtNwidth, 0);
-    XtSetArg(arglist[2], XtNheight, 0);
-
+    label_str = XmStringCreateLocalized((String) str);
+    XtSetArg(arglist[0], XmNlabelString, label_str);
     XtSetValues(w, arglist, (Cardinal) 1);
+    XmStringFree(label_str);
 }
 
 /*

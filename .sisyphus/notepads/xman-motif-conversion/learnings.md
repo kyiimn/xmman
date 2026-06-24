@@ -169,3 +169,21 @@ gcc -c -I. -I/usr/include -I/usr/include/X11 -I/usr/include/Xft -I/usr/include/f
 - **XmForm attachment pattern**: Every widget needs explicit attachments. No attachment = widget collapses to zero size. Full-width widgets need both `XmNleftAttachment=XmATTACH_FORM` and `XmNrightAttachment=XmATTACH_FORM`.
 - **Quit button needs XmNrightAttachment=XmATTACH_FORM** to fill the row properly alongside Help.
 - **Compilation**: Zero errors from MakeTopBox(). All 16 remaining errors are pre-existing Xaw references in other functions.
+
+## Task T12: Option Menu and Manpage Widget Menu Bar Conversion
+
+### Changes Made
+- **CreateOptionMenu()**: Replaced `simpleMenuWidgetClass` → `XmCreatePulldownMenu()`, `smeBSBObjectClass` → `xmPushButtonWidgetClass`, `XtNcallback` → `XmNactivateCallback`, labels via `XmStringCreateLocalized()` + `XmNlabelString` + `XmStringFree()`
+- **CreateSectionMenu()**: Same conversion pattern. Also added `man_globals->section_menu = menu` to store the pulldown menu widget. Changed `XtNcallback` → `XmNactivateCallback`, kept `XtNdestroyCallback` for MenuDestroy.
+- **CreateManpageWidget()**: Restructured call order — pulldown menus created BEFORE cascade buttons that reference them. `panedWidgetClass` → `xmPanedWindowWidgetClass`, `menuButtonWidgetClass` → `xmCascadeButtonWidgetClass`, `labelWidgetClass` → `xmLabelWidgetClass`. Options cascade uses `XmNsubMenuId` + `XmNlabelString`. Sections cascade similarly. `XtNmenuName` eliminated entirely.
+- **StartManpage()**: `XtNlabel` on both_screens_entry → `XmNlabelString` with `XmStringCreateLocalized()`. `XtNpreferredPaneSize` → `XmNpreferredPaneSize`.
+- **ChangeLabel() in misc.c**: Replaced `XtNlabel` with `XmNlabelString` + `XmStringCreateLocalized()` + `XmStringFree()`. Removed the old `XtNwidth/XtNheight` workaround.
+- **man.h**: Added `section_menu` field to `ManpageGlobals` struct.
+
+### Key Findings
+- **Chicken-and-egg problem with XmCascadeButton**: The cascade button needs `XmNsubMenuId` pointing to a pulldown menu widget that must already exist. Solution: create pulldown menus first (via `CreateOptionMenu`/`CreateSectionMenu`), then create cascade buttons referencing `man_globals->option_menu`/`man_globals->section_menu`.
+- **Non-full-instance sections button**: When `full_instance` is FALSE, the sections cascade button is created without `XmNsubMenuId` and then `XtSetSensitive(mysections, FALSE)`. This is valid — Motif allows cascade buttons without submenus.
+- **`XtNpreferredPaneSize` → `XmNpreferredPaneSize`**: When converting `panedWidgetClass` to `xmPanedWindowWidgetClass`, the resource name also changes prefix.
+- **`XmCreatePulldownMenu(parent, name, args, n)`**: This is the Motif convenience function replacing `XtCreatePopupShell(name, simpleMenuWidgetClass, parent, ...)`. The parent should be the shell widget (`mytop`), not the hpane.
+- **Pre-existing Xaw errors remain**: `viewportWidgetClass`, `listWidgetClass`, `labelWidgetClass` (in MakeSaveWidgets), `dialogWidgetClass`, `XawDialogAddButton`, `XtNdefaultDistance`, `XtNlist` — all in functions not part of this task.
+- **`XmStringCreateLocalized((String) option_names[i])`**: Cast to `(String)` needed because `option_names[i]` is `const char *` but `XmStringCreateLocalized` takes `char *`.
