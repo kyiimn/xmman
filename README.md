@@ -1,9 +1,19 @@
-xman is a graphical manual page browser using the Athena Widgets (Xaw) toolkit.
+xman (xmman) is a graphical manual page browser using OpenMotif (Xm)
+with Xft font rendering for the man page display area.
+
+The man page body text uses monospace font D2Coding (with fallback chain:
+Noto Sans Mono CJK KR → DejaVu Sans Mono → monospace → fixed).
+UI chrome uses proportional font NanumMyeongjo (with fallback chain:
+Noto Serif CJK KR → DejaVu Serif → serif → fixed).
+
+The custom ScrollMotive widget (XmDrawingArea-based) provides direct Xft
+text rendering with double-buffering, embedded XmScrollBar, and nroff
+formatting support (bold, italic, symbol).
 
 All questions regarding this software should be directed at the
 Xorg mailing list:
 
-  https://lists.x.org/mailman/listinfo/xorg
+  https://lists.xorg/mailman/listinfo/xorg
 
 The primary development code repository can be found at:
 

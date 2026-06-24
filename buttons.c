@@ -723,15 +723,17 @@ MakeSaveWidgets(ManpageGlobals * man_globals, Widget parent)
                                            parent, args, n);
 
     label_str = XmStringCreateLocalized("Would you like to save this page?");
+    XmString ok_str = XmStringCreateLocalized(FILE_SAVE);
+    XmString cancel_str = XmStringCreateLocalized(CANCEL_FILE_SAVE);
     n = 0;
     XtSetArg(args[n], XmNmessageString, label_str); n++;
     XtSetArg(args[n], XmNdialogType, XmDIALOG_QUESTION); n++;
-    XtSetArg(args[n], XmNokLabelString,
-             XmStringCreateLocalized(FILE_SAVE)); n++;
-    XtSetArg(args[n], XmNcancelLabelString,
-             XmStringCreateLocalized(CANCEL_FILE_SAVE)); n++;
+    XtSetArg(args[n], XmNokLabelString, ok_str); n++;
+    XtSetArg(args[n], XmNcancelLabelString, cancel_str); n++;
     dialog = XmCreateMessageBox(man_globals->save, "saveDialog", args, n);
     XmStringFree(label_str);
+    XmStringFree(ok_str);
+    XmStringFree(cancel_str);
     XtUnmanageChild(XmMessageBoxGetChild(dialog, XmDIALOG_HELP_BUTTON));
     XtAddCallback(dialog, XmNokCallback, SaveOkCallback, NULL);
     XtAddCallback(dialog, XmNcancelCallback, SaveCancelCallback, NULL);
