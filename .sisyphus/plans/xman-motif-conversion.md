@@ -1221,7 +1221,7 @@ Max Concurrent: 4 (Wave 1)
   - Message: `ui: convert section menu to XmPulldownMenu`
   - Files: `buttons.c`
 
-- [ ] 14. Convert manpage widget (paned/label) to XmPanedWindow
+- [x] 14. Convert manpage widget (paned/label) to XmPanedWindow
 
   **What to do**:
   - Rewrite `CreateManpageWidget()` in `buttons.c`:
